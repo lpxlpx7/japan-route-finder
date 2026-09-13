@@ -77,9 +77,9 @@
         </div>
 
         <div class="route-options">
-          <label class="night-option" for="lateNight">
+          <label class="night-option">
             <input id="lateNight" type="checkbox">
-            <span class="checkmark" aria-hidden="true">
+            <span class="checkbox-control" aria-hidden="true">
               <svg viewBox="0 0 16 16"><path d="m3.5 8.2 2.7 2.7 6.3-6.3"/></svg>
             </span>
             <span class="option-copy">
@@ -88,10 +88,12 @@
             </span>
           </label>
 
-          <label class="eobt-field" for="eobtTime">
-            <span>EOBT</span>
-            <input id="eobtTime" type="time" step="60" value="23:00" disabled>
-            <small>JST</small>
+          <label class="eobt-control" for="eobtTime">
+            <span class="eobt-label">EOBT</span>
+            <span class="time-input-shell">
+              <input id="eobtTime" type="time" step="60" value="23:00" disabled>
+              <small>JST</small>
+            </span>
           </label>
         </div>
 
