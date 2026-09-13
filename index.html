@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Search published AIP routes between airports in Japan.">
+  <title>Japan Route Finder</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true">
+    <span class="orb orb-blue"></span>
+    <span class="orb orb-violet"></span>
+    <span class="orb orb-cyan"></span>
+  </div>
+
+  <header class="site-header">
+    <nav class="nav-shell liquid-glass" aria-label="Primary">
+      <a class="brand" href="#top" aria-label="Back to top">
+        <span class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 15.5 20 5l-6.7 14-2.4-5.2L4 15.5Z"/></svg>
+        </span>
+        <span>Japan Route Finder</span>
+      </a>
+
+      <div class="nav-tools">
+        <div class="clock-cluster" aria-label="Current time">
+          <div class="clock-item">
+            <span>JST</span>
+            <time id="jstTime">--:--:--</time>
+          </div>
+          <i></i>
+          <div class="clock-item">
+            <span>UTC</span>
+            <time id="utcTime">--:--:--</time>
+          </div>
+        </div>
+
+        <div class="language-switch" role="group" aria-label="Language">
+          <button class="language-button is-active" type="button" data-language="en" aria-pressed="true">EN</button>
+          <button class="language-button" type="button" data-language="ja" aria-pressed="false">日本語</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="status-row">
+        <span class="eyebrow">JAPAN AIRSPACE</span>
+        <span class="data-status liquid-chip"><i></i><span id="dataLabel" data-i18n="connecting">Connecting to route data</span></span>
+      </div>
+
+      <h1 id="heroTitle"><span data-i18n="heroLine1">Find your route</span><strong data-i18n="heroLine2">across Japan.</strong></h1>
+      <p class="lead" data-i18n="lead">Enter departure and arrival ICAO codes to search published AIP routes across Japan.</p>
+
+      <form id="routeForm" class="search-panel liquid-glass" novalidate>
+        <div class="glass-highlight" aria-hidden="true"></div>
+        <div class="route-inputs">
+          <label class="field">
+            <span data-i18n="departure">Departure airport</span>
+            <input id="departure" name="departure" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" maxlength="4" placeholder="RJTT" aria-describedby="formError">
+            <small>DEPARTURE</small>
+          </label>
+
+          <button id="swapButton" class="swap-button" type="button" aria-label="Swap departure and arrival airports" data-i18n-aria="swap">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 3-3m-3 3 3 3M7 7h10M17 17l-3 3m3-3-3-3m3 3H7"/></svg>
+          </button>
+
+          <label class="field">
+            <span data-i18n="arrival">Arrival airport</span>
+            <input id="arrival" name="arrival" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" maxlength="4" placeholder="RJBB" aria-describedby="formError">
+            <small>ARRIVAL</small>
+          </label>
+        </div>
+
+        <div class="route-options">
+          <label class="night-option" for="lateNight">
+            <input id="lateNight" type="checkbox">
+            <span class="checkmark" aria-hidden="true">
+              <svg viewBox="0 0 16 16"><path d="m3.5 8.2 2.7 2.7 6.3-6.3"/></svg>
+            </span>
+            <span class="option-copy">
+              <strong data-i18n="lateNight">Late-night route</strong>
+              <small data-i18n="lateNightRange">23:00–05:59 JST</small>
+            </span>
+          </label>
+
+          <label class="eobt-field" for="eobtTime">
+            <span>EOBT</span>
+            <input id="eobtTime" type="time" step="60" value="23:00" disabled>
+            <small>JST</small>
+          </label>
+        </div>
+
+        <p id="formError" class="form-error" role="alert"></p>
+
+        <button id="searchButton" class="primary-button" type="submit">
+          <span data-i18n="search">Search recommended routes</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>
+        </button>
+      </form>
+
+      <div class="examples" aria-label="Route search examples" data-i18n-aria="examplesAria">
+        <span data-i18n="quickStart">Quick start</span>
+        <button type="button" data-dep="RJTT" data-arr="RJBB" data-i18n="exampleTokyoOsaka">Tokyo → Osaka</button>
+        <button type="button" data-dep="RJAA" data-arr="RJCC" data-i18n="exampleNaritaChitose">Narita → New Chitose</button>
+        <button type="button" data-dep="RJFF" data-arr="ROAH" data-i18n="exampleFukuokaNaha">Fukuoka → Naha</button>
+      </div>
+    </section>
+
+    <section id="resultsSection" class="results-section" aria-live="polite" hidden>
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">ROUTE RESULTS</span>
+          <h2 id="resultTitle" data-i18n="results">Search results</h2>
+        </div>
+        <span id="resultCount" class="count-badge liquid-chip"></span>
+      </div>
+      <div id="results" class="results-grid"></div>
+    </section>
+
+    <section class="about liquid-glass">
+      <div class="glass-highlight" aria-hidden="true"></div>
+      <div class="about-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-13v5m0 3.2v.1"/></svg>
+      </div>
+      <div>
+        <span class="section-kicker">ABOUT THIS EDITION</span>
+        <h2 data-i18n="aboutTitle">Built for one clear purpose.</h2>
+        <p data-i18n="aboutText">This web edition isolates and redesigns the AIP route search from Kevin's Japan Flight Dispatcher. Many thanks to Kevin for developing and maintaining the original application.</p>
+        <a href="https://github.com/kevin-git-2026/japan-flight-dispatcher" target="_blank" rel="noreferrer"><span data-i18n="originalProject">View the original project</span> ↗</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p><span data-i18n="footerRemix">Redesigned by Jurina from Kevin's original application.</span> <a href="https://github.com/kevin-git-2026/japan-flight-dispatcher" target="_blank" rel="noreferrer" data-i18n="sourceLink">Source code</a></p>
+    <p data-i18n="footerNotice">Route data is provided by jp-routes. For flight simulation and educational use only. Not for real-world navigation.</p>
+    <p class="copyright">Copyright © 2026 Kevin &amp; Jurina. All rights reserved.</p>
+  </footer>
+
+  <div id="toast" class="toast liquid-chip" role="status" aria-live="polite"></div>
+</body>
+</html>
