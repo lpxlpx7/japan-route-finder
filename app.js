@@ -6,8 +6,8 @@ const messages = {
   en: {
     pageTitle: "Japan Route Finder",
     connecting: "Connecting to route data",
-    liveData: (count) => `Live data · ${count} routes`,
-    offlineData: (count) => `Offline cache · ${count} routes`,
+    liveData: (count) => `Live data 路 ${count} routes`,
+    offlineData: (count) => `Offline cache 路 ${count} routes`,
     dataError: "Route data unavailable",
     heroLine1: "Find your route",
     heroLine2: "across Japan.",
@@ -17,12 +17,12 @@ const messages = {
     swap: "Swap departure and arrival airports",
     search: "Search recommended routes",
     lateNight: "Late-night route",
-    lateNightRange: "23:00–05:59 JST",
+    lateNightRange: "23:00鈥?5:59 JST",
     examplesAria: "Route search examples",
     quickStart: "Quick start",
-    exampleTokyoOsaka: "Tokyo → Osaka",
-    exampleNaritaChitose: "Narita → New Chitose",
-    exampleFukuokaNaha: "Fukuoka → Naha",
+    exampleTokyoOsaka: "Tokyo 鈫?Osaka",
+    exampleNaritaChitose: "Narita 鈫?New Chitose",
+    exampleFukuokaNaha: "Fukuoka 鈫?Naha",
     results: "Search results",
     resultTitle: (dep, arr) => `${dep} to ${arr}`,
     resultCount: (count) => `${count} recommended`,
@@ -31,7 +31,7 @@ const messages = {
     copy: "Copy",
     copyAria: (index) => `Copy route option ${index}`,
     copied: "Route copied",
-    time: "Time restriction",
+    time: "Published time restriction",
     altitude: "Altitude restriction",
     aircraft: "Aircraft",
     remarks: "Remarks",
@@ -45,6 +45,7 @@ const messages = {
     footerRemix: "Redesigned by Jurina from Kevin's original application.",
     sourceLink: "Source code",
     footerNotice: "Route data is provided by jp-routes. For flight simulation and educational use only. Not for real-world navigation.",
+    openSourceAt: "Source available at",
     required: "Enter both departure and arrival ICAO codes.",
     invalid: "ICAO codes must contain four letters or numbers.",
     same: "Departure and arrival airports must be different.",
@@ -52,58 +53,59 @@ const messages = {
     unavailable: "Route data could not be loaded. Check your connection and refresh the page.",
     nightTimeRequired: "Select an EOBT time for the late-night route filter.",
     nightTimeRange: "Late-night EOBT must be between 23:00 and 05:59 JST.",
-    nightResultCount: (count, time) => `${count} recommended · EOBT ${time} JST`
+    nightResultCount: (count, time) => `${count} recommended 路 EOBT ${time} JST`
   },
   ja: {
     pageTitle: "Japan Route Finder",
-    connecting: "データに接続中",
-    liveData: (count) => `最新データ · ${count}件`,
-    offlineData: (count) => `オフライン · ${count}件`,
-    dataError: "データ接続エラー",
-    heroLine1: "日本を飛ぶルートを",
-    heroLine2: "すぐに見つける。",
-    lead: "出発・到着空港の ICAO コードから、日本国内の公開 AIP 推奨ルートをすばやく検索できます。",
-    departure: "出発空港",
-    arrival: "到着空港",
-    swap: "出発空港と到着空港を入れ替える",
-    search: "推奨ルートを検索",
-    lateNight: "深夜ルート",
-    lateNightRange: "23:00〜05:59 JST",
-    examplesAria: "検索例",
-    quickStart: "クイック検索",
-    exampleTokyoOsaka: "東京 → 大阪",
-    exampleNaritaChitose: "成田 → 新千歳",
-    exampleFukuokaNaha: "福岡 → 那覇",
-    results: "検索結果",
-    resultTitle: (dep, arr) => `${dep} から ${arr}`,
-    resultCount: (count) => `${count}件の候補`,
-    noRoutes: "ルートなし",
-    option: "候補",
-    copy: "コピー",
-    copyAria: (index) => `${index}番目のルートをコピー`,
-    copied: "ルートをコピーしました",
-    time: "時間制限",
-    altitude: "高度制限",
-    aircraft: "対象機種",
-    remarks: "備考",
-    unspecified: "指定なし",
-    emptyTitle: "該当するルートがありません",
-    emptyText: (dep, arr) => `${dep} から ${arr} の推奨ルートは現在登録されていません。`,
-    emptyHint: "ICAO コードを確認するか、逆方向で検索してください。",
-    aboutTitle: "ひとつの目的を、明快に。",
-    aboutText: "Kevin の Japan Flight Dispatcher から AIP ルート検索機能を独立させ、Web 向けに再設計しました。オリジナルプログラムの開発と保守に感謝します。",
-    originalProject: "オリジナルプロジェクトを見る",
-    footerRemix: "Kevin のプログラムを基に、Jurina が再設計しました。",
-    sourceLink: "ソースコード",
-    footerNotice: "ルートデータは jp-routes より取得しています。フライトシミュレーションおよび学習用であり、実運航には使用できません。",
-    required: "出発空港と到着空港の ICAO コードを入力してください。",
-    invalid: "ICAO コードは4文字の英数字で入力してください。",
-    same: "出発空港と到着空港には異なるコードを指定してください。",
-    loading: "ルートデータを読み込んでいます。しばらくお待ちください。",
-    unavailable: "ルートデータに接続できません。ネットワークを確認して再読み込みしてください。",
-    nightTimeRequired: "深夜ルート用の EOBT を選択してください。",
-    nightTimeRange: "深夜 EOBT は 23:00〜05:59 JST の範囲で指定してください。",
-    nightResultCount: (count, time) => `${count}件の候補 · EOBT ${time} JST`
+    connecting: "銉囥兗銈裤伀鎺ョ稓涓?,
+    liveData: (count) => `鏈€鏂般儑銉笺偪 路 ${count}浠禶,
+    offlineData: (count) => `銈儠銉┿偆銉?路 ${count}浠禶,
+    dataError: "銉囥兗銈挎帴缍氥偍銉┿兗",
+    heroLine1: "鏃ユ湰銈掗銇躲儷銉笺儓銈?,
+    heroLine2: "銇欍亹銇銇ゃ亼銈嬨€?,
+    lead: "鍑虹櫤銉诲埌鐫€绌烘腐銇?ICAO 銈炽兗銉夈亱銈夈€佹棩鏈浗鍐呫伄鍏枊 AIP 鎺ㄥエ銉兗銉堛倰銇欍伆銈勩亸妞滅储銇с亶銇俱仚銆?,
+    departure: "鍑虹櫤绌烘腐",
+    arrival: "鍒扮潃绌烘腐",
+    swap: "鍑虹櫤绌烘腐銇ㄥ埌鐫€绌烘腐銈掑叆銈屾浛銇堛倠",
+    search: "鎺ㄥエ銉兗銉堛倰妞滅储",
+    lateNight: "娣卞銉兗銉?,
+    lateNightRange: "23:00銆?5:59 JST",
+    examplesAria: "妞滅储渚?,
+    quickStart: "銈偆銉冦偗妞滅储",
+    exampleTokyoOsaka: "鏉变含 鈫?澶ч槳",
+    exampleNaritaChitose: "鎴愮敯 鈫?鏂板崈姝?,
+    exampleFukuokaNaha: "绂忓病 鈫?閭ｈ",
+    results: "妞滅储绲愭灉",
+    resultTitle: (dep, arr) => `${dep} 銇嬨倝 ${arr}`,
+    resultCount: (count) => `${count}浠躲伄鍊欒`,
+    noRoutes: "銉兗銉堛仾銇?,
+    option: "鍊欒",
+    copy: "銈炽償銉?,
+    copyAria: (index) => `${index}鐣洰銇儷銉笺儓銈掋偝銉斻兗`,
+    copied: "銉兗銉堛倰銈炽償銉笺仐銇俱仐銇?,
+    time: "鍏ず鏅傞枔鍒堕檺",
+    altitude: "楂樺害鍒堕檺",
+    aircraft: "瀵捐薄姗熺ó",
+    remarks: "鍌欒€?,
+    unspecified: "鎸囧畾銇仐",
+    emptyTitle: "瑭插綋銇欍倠銉兗銉堛亴銇傘倞銇俱仜銈?,
+    emptyText: (dep, arr) => `${dep} 銇嬨倝 ${arr} 銇帹濂ㄣ儷銉笺儓銇従鍦ㄧ櫥閷层仌銈屻仸銇勩伨銇涖倱銆俙,
+    emptyHint: "ICAO 銈炽兗銉夈倰纰鸿獚銇欍倠銇嬨€侀€嗘柟鍚戙仹妞滅储銇椼仸銇忋仩銇曘亜銆?,
+    aboutTitle: "銇层仺銇ゃ伄鐩殑銈掋€佹槑蹇伀銆?,
+    aboutText: "Kevin 銇?Japan Flight Dispatcher 銇嬨倝 AIP 銉兗銉堟绱㈡鑳姐倰鐙珛銇曘仜銆乄eb 鍚戙亼銇啀瑷▓銇椼伨銇椼仧銆傘偑銉偢銉娿儷銉椼儹銈般儵銉犮伄闁嬬櫤銇ㄤ繚瀹堛伀鎰熻瑵銇椼伨銇欍€?,
+    originalProject: "銈儶銈搞儕銉儣銉偢銈с偗銉堛倰瑕嬨倠",
+    footerRemix: "Kevin 銇儣銉偘銉┿儬銈掑熀銇€丣urina 銇屽啀瑷▓銇椼伨銇椼仧銆?,
+    sourceLink: "銈姐兗銈广偝銉笺儔",
+    footerNotice: "銉兗銉堛儑銉笺偪銇?jp-routes 銈堛倞鍙栧緱銇椼仸銇勩伨銇欍€傘儠銉┿偆銉堛偡銉熴儱銉兗銈枫儳銉炽亰銈堛伋瀛︾繏鐢ㄣ仹銇傘倞銆佸疅閬嬭埅銇伅浣跨敤銇с亶銇俱仜銈撱€?,
+    openSourceAt: "銈姐兗銈广偝銉笺儔銇亾銇°倝",
+    required: "鍑虹櫤绌烘腐銇ㄥ埌鐫€绌烘腐銇?ICAO 銈炽兗銉夈倰鍏ュ姏銇椼仸銇忋仩銇曘亜銆?,
+    invalid: "ICAO 銈炽兗銉夈伅4鏂囧瓧銇嫳鏁板瓧銇у叆鍔涖仐銇︺亸銇犮仌銇勩€?,
+    same: "鍑虹櫤绌烘腐銇ㄥ埌鐫€绌烘腐銇伅鐣般仾銈嬨偝銉笺儔銈掓寚瀹氥仐銇︺亸銇犮仌銇勩€?,
+    loading: "銉兗銉堛儑銉笺偪銈掕銇胯炯銈撱仹銇勩伨銇欍€傘仐銇般倝銇忋亰寰呫仭銇忋仩銇曘亜銆?,
+    unavailable: "銉兗銉堛儑銉笺偪銇帴缍氥仹銇嶃伨銇涖倱銆傘儘銉冦儓銉兗銈倰纰鸿獚銇椼仸鍐嶈銇胯炯銇裤仐銇︺亸銇犮仌銇勩€?,
+    nightTimeRequired: "娣卞銉兗銉堢敤銇?EOBT 銈掗伕鎶炪仐銇︺亸銇犮仌銇勩€?,
+    nightTimeRange: "娣卞 EOBT 銇?23:00銆?5:59 JST 銇瘎鍥层仹鎸囧畾銇椼仸銇忋仩銇曘亜銆?,
+    nightResultCount: (count, time) => `${count}浠躲伄鍊欒 路 EOBT ${time} JST`
   }
 };
 
@@ -211,8 +213,30 @@ function validate(dep, arr) {
 function escapeHtml(value) { return value.replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]); }
 function metaItem(label, value, extraClass = "") { return `<div class="meta-item ${extraClass}"><span>${label}</span><p>${escapeHtml(value || t("unspecified"))}</p></div>`; }
 
+function formatMinutes(minutes) {
+  const normalized = (minutes + 1440) % 1440;
+  return `${String(Math.floor(normalized / 60)).padStart(2, "0")}:${String(normalized % 60).padStart(2, "0")}`;
+}
+
+function formatTimeRestriction(restriction) {
+  const windows = [];
+  const pattern = /(EOBT|ETA)\s*(\d{2})(\d{2})\s*-\s*(\d{2})(\d{2})/gi;
+  let match;
+  while ((match = pattern.exec(restriction || ""))) {
+    windows.push({
+      kind: match[1].toUpperCase(),
+      start: Number(match[2]) * 60 + Number(match[3]),
+      end: Number(match[4]) * 60 + Number(match[5])
+    });
+  }
+  if (!windows.length) return restriction;
+  const utc = windows.map(({ kind, start, end }) => `${kind} ${formatMinutes(start)}鈥?{formatMinutes(end)} UTC (Z)`).join(" 路 ");
+  const jst = windows.map(({ kind, start, end }) => `${kind} ${formatMinutes(start + 540)}鈥?{formatMinutes(end + 540)} JST`).join(" 路 ");
+  return `${utc}\n${jst}`;
+}
+
 function routeCard(route, index) {
-  return `<article class="route-card" style="animation-delay:${Math.min(index * 70, 280)}ms"><div class="route-card-head"><div><span class="route-number">${t("option")} ${String(index + 1).padStart(2, "0")}</span><div class="route-pair"><strong>${escapeHtml(route.dep)}</strong><svg viewBox="0 0 40 16" aria-hidden="true"><path d="M1 8h36m-7-6 7 6-7 6"/></svg><strong>${escapeHtml(route.arr)}</strong></div></div><button class="copy-button" type="button" data-copy="${escapeHtml(route.route)}" aria-label="${t("copyAria", index + 1)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h10v11H8zM6 16H5V5h10v1"/></svg><span>${t("copy")}</span></button></div><div class="route-string">${escapeHtml(route.route)}</div><div class="route-meta">${metaItem(t("time"), route.time)}${metaItem(t("altitude"), route.altitude)}${metaItem(t("aircraft"), route.aircraft)}${route.remarks ? metaItem(t("remarks"), route.remarks, "remarks") : ""}</div></article>`;
+  return `<article class="route-card" style="animation-delay:${Math.min(index * 70, 280)}ms"><div class="route-card-head"><div><span class="route-number">${t("option")} ${String(index + 1).padStart(2, "0")}</span><div class="route-pair"><strong>${escapeHtml(route.dep)}</strong><svg viewBox="0 0 40 16" aria-hidden="true"><path d="M1 8h36m-7-6 7 6-7 6"/></svg><strong>${escapeHtml(route.arr)}</strong></div></div><button class="copy-button" type="button" data-copy="${escapeHtml(route.route)}" aria-label="${t("copyAria", index + 1)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h10v11H8zM6 16H5V5h10v1"/></svg><span>${t("copy")}</span></button></div><div class="route-string">${escapeHtml(route.route)}</div><div class="route-meta">${metaItem(t("time"), formatTimeRestriction(route.time), "time-meta")}${metaItem(t("altitude"), route.altitude)}${metaItem(t("aircraft"), route.aircraft)}${route.remarks ? metaItem(t("remarks"), route.remarks, "remarks") : ""}</div></article>`;
 }
 
 function renderResults(dep, arr, matches, shouldScroll = true) {
