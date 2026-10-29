@@ -1,0 +1,194 @@
+<?php
+declare(strict_types=1);
+
+const TRANSLATIONS = [
+    'en' => [
+        'pageTitle' => 'Japan Route Finder',
+        'brand' => 'Japan Route Finder',
+        'languageLabel' => 'Language',
+        'themeLabel' => 'Switch color theme',
+        'heroTitle' => 'Routes across<br><span>Japan.</span>',
+        'heroLead' => 'Enter two ICAO codes. If the AIP publishes a route for the pair, you get that. If not, you get a reference route built from NavData.',
+        'departure' => 'Departure',
+        'arrival' => 'Arrival',
+        'swap' => 'Swap departure and arrival',
+        'eobt' => 'EOBT (JST)',
+        'eobtHint' => 'Optional. Filters out routes whose time restrictions don’t fit.',
+        'search' => 'Search',
+        'searching' => 'Searching…',
+        'examples' => 'Try',
+        'errorRequired' => 'Enter both ICAO codes.',
+        'errorInvalid' => 'ICAO codes are four letters, like RJTT.',
+        'errorSame' => 'Departure and arrival are the same airport.',
+        'errorEobt' => 'EOBT should look like 23:30.',
+        'errorService' => 'The route service didn’t respond. Try again in a minute.',
+        'kickerAip' => 'Published AIP route',
+        'kickerGenerated' => 'Generated route',
+        'generatedLabel' => 'Reference route',
+        'kickerMismatch' => 'Outside the time window',
+        'kickerNone' => 'No route',
+        'routeCount' => '{count} published',
+        'routeCountOne' => '1 published',
+        'eobtBadge' => 'EOBT {eobt} JST',
+        'routeNumber' => 'Route {n}',
+        'copy' => 'Copy',
+        'copied' => 'Copied',
+        'time' => 'Time',
+        'altitude' => 'Altitude',
+        'aircraft' => 'Aircraft',
+        'remarks' => 'Remarks',
+        'none' => '—',
+        'distance' => 'Distance',
+        'method' => 'Built from',
+        'methodAirway' => 'Airways',
+        'methodDirect' => 'Direct to arrival fix',
+        'sidOptions' => 'SIDs ending at {fix}',
+        'starOptions' => 'STARs from {fix}',
+        'approachOptions' => 'Approaches from {fix}',
+        'notes' => 'Notes',
+        'generatedNote' => 'The AIP has no route for this pair, so this one was generated. Enroute part only: pick the SID, STAR and approach yourself, and check charts and NOTAMs.',
+        'mismatchText' => 'There are published routes for this pair, but none of them fit an EOBT of {eobt} JST. ETA is estimated with 15 minutes of taxi and a 450 kt cruise.',
+        'mismatchHint' => 'Try a different time, or search without EOBT to see them all.',
+        'noneText' => 'Nothing found for {dep} → {arr}.',
+        'noneHint' => 'Check the codes, or try the other direction.',
+        'dataCycles' => 'NavData AIRAC {navdata} · Transfer table {transfer}',
+        'dataStale' => 'jp-routes is unreachable right now, so these results use cached AIP data.',
+        'aboutEyebrow' => 'About',
+        'aboutTitle' => 'Where the routes come from.',
+        'aboutAip' => 'Published routes come from <a href="https://jp-routes.vercel.app/" target="_blank" rel="noopener noreferrer">jp-routes</a> and are shown as listed.',
+        'aboutGenerated' => 'For pairs without one, Jurina API builds a route from X-Plane NavData, CIFP and the ATC transfer-point table, following the airways and entry points real AIP routes use. It’s the same logic as Jurina’s Bot.',
+        'aboutKevin' => 'The route search started in Kevin’s <a href="https://github.com/kevin-git-2026/japan-flight-dispatcher" target="_blank" rel="noopener noreferrer">Japan Flight Dispatcher</a>. Thanks, Kevin.',
+        'clockJst' => 'Japan',
+        'clockUtc' => 'UTC',
+        'footerNotice' => 'For flight simulation only. Don’t use it for real-world navigation.',
+        'footerHome' => 'Jurina’s Homepage',
+        'footerSource' => 'Source on GitHub',
+        'footerOriginal' => 'Original app by Kevin',
+        'warnSharpTurn' => 'Turn of about {angle}° near {fix}. Check the route.',
+        'warnSharedDirection' => 'Direction on a shared segment ({airways}) comes from the NavData N flag and isn’t confirmed by any AIP route. Check the published charts.',
+        'warnShortSwitched' => 'Short flight, so this switched to a direct route. Check published routes and ATC instructions.',
+        'warnShortDirect' => 'Short flight, so this uses a direct route. Check published routes and ATC instructions.',
+        'warnNoAip' => 'No AIP route data was available, so this was generated without learning from published corridors.',
+        'warnNoSid' => 'No SID ends at the first fix. ATC will have to connect it.',
+        'warnNoStar' => 'No STAR starts at the last fix. Check approach procedures and ATC.',
+    ],
+    'ja' => [
+        'pageTitle' => 'Japan Route Finder',
+        'brand' => 'Japan Route Finder',
+        'languageLabel' => '言語',
+        'themeLabel' => 'カラーテーマを切り替える',
+        'heroTitle' => '日本の空の、<br><span>航路検索。</span>',
+        'heroLead' => 'ICAO コードを2つ入力してください。AIP に公示経路があればそれを、なければ NavData から作った参考経路を表示します。',
+        'departure' => '出発',
+        'arrival' => '到着',
+        'swap' => '出発と到着を入れ替える',
+        'eobt' => 'EOBT（JST）',
+        'eobtHint' => '任意。時間条件に合わない経路を除外します。',
+        'search' => '検索',
+        'searching' => '検索中…',
+        'examples' => '例',
+        'errorRequired' => 'ICAO コードを2つとも入力してください。',
+        'errorInvalid' => 'ICAO コードは RJTT のような英字4文字です。',
+        'errorSame' => '出発と到着が同じ空港です。',
+        'errorEobt' => 'EOBT は 23:30 の形式で入力してください。',
+        'errorService' => '経路サービスから応答がありません。少し待ってから再度お試しください。',
+        'kickerAip' => 'AIP 公示経路',
+        'kickerGenerated' => '生成した参考経路',
+        'generatedLabel' => '参考経路',
+        'kickerMismatch' => '時間条件外',
+        'kickerNone' => '経路なし',
+        'routeCount' => '公示 {count} 件',
+        'routeCountOne' => '公示 1 件',
+        'eobtBadge' => 'EOBT {eobt} JST',
+        'routeNumber' => '経路 {n}',
+        'copy' => 'コピー',
+        'copied' => 'コピーしました',
+        'time' => '時間',
+        'altitude' => '高度',
+        'aircraft' => '機種',
+        'remarks' => '備考',
+        'none' => '—',
+        'distance' => '距離',
+        'method' => '生成方法',
+        'methodAirway' => '航空路',
+        'methodDirect' => '到着フィックスへ直行',
+        'sidOptions' => '{fix} に接続する SID',
+        'starOptions' => '{fix} から接続する STAR',
+        'approachOptions' => '{fix} から接続する進入方式',
+        'notes' => '注意',
+        'generatedNote' => 'この区間は AIP に公示経路がないため、経路を生成しました。表示はエンルート部分のみです。SID・STAR・進入方式は別途選び、航空図と NOTAM を確認してください。',
+        'mismatchText' => 'この区間には公示経路がありますが、EOBT {eobt} JST の時間条件に合うものはありません。ETA はタキシング15分・巡航450 ktで概算しています。',
+        'mismatchHint' => '時刻を変えるか、EOBT なしで検索するとすべて表示されます。',
+        'noneText' => '{dep} → {arr} の経路は見つかりませんでした。',
+        'noneHint' => 'コードを確認するか、逆方向で検索してください。',
+        'dataCycles' => 'NavData AIRAC {navdata} · 移管表 {transfer}',
+        'dataStale' => 'jp-routes に接続できないため、キャッシュした AIP データを使っています。',
+        'aboutEyebrow' => 'このサイトについて',
+        'aboutTitle' => '経路データについて。',
+        'aboutAip' => '公示経路は <a href="https://jp-routes.vercel.app/" target="_blank" rel="noopener noreferrer">jp-routes</a> のデータをそのまま表示しています。',
+        'aboutGenerated' => '公示経路がない区間は、Jurina API が X-Plane の NavData・CIFP・移管表をもとに、実際の AIP 経路で使われている航空路や出入口を参考にして組み立てます。Jurina’s Bot と同じロジックです。',
+        'aboutKevin' => '経路検索は Kevin の <a href="https://github.com/kevin-git-2026/japan-flight-dispatcher" target="_blank" rel="noopener noreferrer">Japan Flight Dispatcher</a> から始まりました。Kevin に感謝します。',
+        'clockJst' => '日本時間',
+        'clockUtc' => 'UTC',
+        'footerNotice' => 'フライトシミュレーション専用です。実際の運航には使用しないでください。',
+        'footerHome' => 'Jurinaのホームページ',
+        'footerSource' => 'GitHubでソースを見る',
+        'footerOriginal' => 'オリジナル：Kevin',
+        // The API's own wording, shown as-is in Japanese.
+        'warnSharpTurn' => '{fix}付近に約{angle}°の急旋回があります。経路を確認してください。',
+        'warnSharedDirection' => '共用区間の方向はNavDataのN指定に基づきます（{airways}）。AIPによる当該方向の確認ができていないため、公示資料を確認してください。',
+        'warnShortSwitched' => '短距離区間のため直飛経路に切り替えました。公示経路と管制指示を確認してください。',
+        'warnShortDirect' => '短距離区間のため直飛経路を使用します。公示経路と管制指示を確認してください。',
+        'warnNoAip' => 'AIP航路データがないため、走廊・実運用端点の学習なしで生成しています。',
+        'warnNoSid' => '出発端点に直接接続するSIDは確認できません。管制による接続が必要です。',
+        'warnNoStar' => '到着端点に直接接続するSTARは確認できません。進近方式・管制による接続を確認してください。',
+    ],
+];
+
+function current_language(): string
+{
+    foreach ([$_GET['lang'] ?? null, $_COOKIE['language'] ?? null] as $candidate) {
+        if ($candidate === 'en' || $candidate === 'ja') {
+            return $candidate;
+        }
+    }
+    return str_starts_with(strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? ''), 'ja') ? 'ja' : 'en';
+}
+
+function t(string $key, array $args = []): string
+{
+    global $language;
+    $text = TRANSLATIONS[$language][$key] ?? TRANSLATIONS['en'][$key] ?? $key;
+    foreach ($args as $name => $value) {
+        $text = str_replace('{' . $name . '}', (string) $value, $text);
+    }
+    return $text;
+}
+
+/** Text element that the language switch can re-translate in place. */
+function i18n(string $key, array $args = [], string $tag = 'span', string $attributes = ''): string
+{
+    $data = ' data-i18n="' . e($key) . '"' . ($args ? " data-i18n-args='" . e(json_encode($args, JSON_UNESCAPED_UNICODE)) . "'" : '');
+    $escaped = array_map(fn ($value) => e((string) $value), $args);
+    return "<$tag$data$attributes>" . t($key, $escaped) . "</$tag>";
+}
+
+/** Map an API warning (always Japanese) to a translation key, if it's one we know. */
+function warning_key(string $warning): ?array
+{
+    $patterns = [
+        'warnSharpTurn' => '/^(?<fix>\S+)付近に約(?<angle>\d+)°の急旋回があります。/u',
+        'warnSharedDirection' => '/^共用区間の方向はNavDataのN指定に基づきます（(?<airways>[^）]*)）/u',
+        'warnShortSwitched' => '/^短距離区間のため直飛経路に切り替えました/u',
+        'warnShortDirect' => '/^短距離区間のため直飛経路を使用します/u',
+        'warnNoAip' => '/^AIP航路データがないため/u',
+        'warnNoSid' => '/^出発端点に直接接続するSID/u',
+        'warnNoStar' => '/^到着端点に直接接続するSTAR/u',
+    ];
+    foreach ($patterns as $key => $pattern) {
+        if (preg_match($pattern, $warning, $match)) {
+            return [$key, array_filter($match, 'is_string', ARRAY_FILTER_USE_KEY)];
+        }
+    }
+    return null;
+}

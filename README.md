@@ -1,55 +1,69 @@
 # Japan Route Finder
 
-A lightweight static website for searching published AIP routes between airports in Japan.
+Look up IFR routes between airports in Japan. If the AIP publishes a route for the pair, the site shows it. If it doesn't, it shows a reference route generated from NavData.
 
-This project was inspired by the AIP route search feature in Kevin's [Japan Flight Dispatcher](https://github.com/kevin-git-2026/japan-flight-dispatcher). It provides a separate, browser-based implementation focused exclusively on route lookup.
+The routes come from [Jurina API](https://api.jurina.org) (`/v1/japan-route/route`). The PHP page calls the API from the server, so the API key never reaches the browser.
 
-## Features
+## Requirements
 
-- English and Japanese interface
-- Live JST and UTC clocks
-- Exact route lookup by departure and arrival ICAO codes
-- Optional late-night EOBT filtering for departures between 23:00 and 05:59 JST
-- Published time, altitude, aircraft, and remarks fields
-- One-click route copying
-- Live data from `jp-routes`
-- Browser cache fallback when the data source is temporarily unavailable
-- Responsive layout for desktop and mobile devices
-- Apple-inspired liquid glass interface on a clean white canvas
+- PHP 8.1 or later with the `curl` extension
+- Jurina API running on the same server (by default the Docker container on `127.0.0.1:8080`)
 
-## Run Locally
+## Setup
 
-Start any static file server from the project root. For example:
-
-```powershell
-python -m http.server 8080
+```bash
+cp config.example.php config.php
+nano config.php
 ```
 
-Then open:
+Set `api_key` to one of the keys in the API's `API_KEYS` (the part after `web:`, for example). `api_base` defaults to `http://127.0.0.1:8080`, which reaches the container directly without going out to the internet. You can also set `JURINA_API_BASE` and `JURINA_API_KEY` as environment variables instead.
+
+`config.php` and `src/` must not be served. The included `.htaccess` handles that on Apache. On nginx with PHP-FPM:
+
+```nginx
+server {
+    server_name jprt.lpxlpx7.top;
+    root /var/www/japan-route-finder;
+    index index.php;
+
+    location ~ ^/(src/|config(\.example)?\.php|README\.md) { return 404; }
+    location / { try_files $uri $uri/ /index.php?$query_string; }
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_pass unix:/run/php/php-fpm.sock;
+    }
+}
+```
+
+To try it locally:
+
+```bash
+php -S 127.0.0.1:8090
+```
+
+## Files
 
 ```text
-http://localhost:8080
+index.php            page, and ?partial=1 for in-page searches
+src/bootstrap.php    config and the API request
+src/results.php      result cards
+src/i18n.php         English and Japanese text
+assets/              CSS, JS, fonts, icons
 ```
+
+The look follows [jurina.org](https://www.jurina.org/): same colors, fonts, light/dark theme and EN/日本語 switch.
 
 ## Attribution
 
-The original application was created and is maintained by Kevin:
+The route search started in Kevin's [Japan Flight Dispatcher](https://github.com/kevin-git-2026/japan-flight-dispatcher). Thanks to Kevin for the original app. The upstream project doesn't declare a license, so no rights to its code are granted here.
 
-- Upstream project: [kevin-git-2026/japan-flight-dispatcher](https://github.com/kevin-git-2026/japan-flight-dispatcher)
-- Jurina's existing fork of the original application: [lpxlpx7/japan-flight-dispatcher](https://github.com/lpxlpx7/japan-flight-dispatcher)
+Published routes come from [jp-routes](https://jp-routes.vercel.app/). Generated routes use X-Plane NavData from Navigraph and are only for flight simulation.
 
-Many thanks to Kevin for the original application and its route-search concept.
-
-This repository is intentionally separate from the existing fork. It contains only the independently implemented static website and does not include the upstream Python/Flet source tree. The upstream repository currently does not declare a license; no license rights to Kevin's original source code are asserted or granted by this repository.
-
-Route data is provided by `jp-routes`.
-
-This website is intended only for flight simulation and educational use. It must not be used for real-world flight planning or navigation.
-
-Original Japan Flight Dispatcher copyright remains with Kevin. The Japan Route Finder web implementation is copyright © 2026 Jurina.
+Icons are [Ionicons](https://ionic.io/ionicons) (MIT, see `assets/icons/LICENSE-ionicons.txt`).
 
 ## License
 
-The original code in this standalone web repository is licensed under the [GNU General Public License v2.0 only](LICENSE), identified by the SPDX expression `GPL-2.0-only`.
+The code in this repository is licensed under [GPL-2.0-only](LICENSE). It doesn't relicense Kevin's project or any third-party data.
 
-This license applies only to the files in this repository. It does not relicense Kevin's upstream Japan Flight Dispatcher project or the route data supplied by third parties.
+For flight simulation only. Don't use it for real-world navigation.

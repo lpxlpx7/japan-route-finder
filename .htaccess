@@ -1,0 +1,5 @@
+# Apache: keep config and PHP sources out of reach. See README for nginx.
+<FilesMatch "^(config(\.example)?\.php|README\.md|LICENSE)$">
+  Require all denied
+</FilesMatch>
+RedirectMatch 404 ^/src(/|$)
