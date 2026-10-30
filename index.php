@@ -126,7 +126,7 @@ $asset = fn (string $path) => e($path) . '?v=' . filemtime(__DIR__ . '/' . $path
     <p class="footer-notice" data-i18n="footerNotice"><?= e(t('footerNotice')) ?></p>
     <div class="footer-links">
       <a href="https://www.jurina.org/" target="_blank" rel="noopener noreferrer"><span data-i18n="footerHome"><?= e(t('footerHome')) ?></span> <span class="icon icon-external" aria-hidden="true"></span></a>
-      <a href="https://github.com/lpxlpx7/japan-flight-dispatcher" target="_blank" rel="noopener noreferrer"><span data-i18n="footerSource"><?= e(t('footerSource')) ?></span> <span class="icon icon-external" aria-hidden="true"></span></a>
+      <a href="https://github.com/lpxlpx7/japan-route-finder" target="_blank" rel="noopener noreferrer"><span data-i18n="footerSource"><?= e(t('footerSource')) ?></span> <span class="icon icon-external" aria-hidden="true"></span></a>
       <a href="https://github.com/kevin-git-2026/japan-flight-dispatcher" target="_blank" rel="noopener noreferrer"><span data-i18n="footerOriginal"><?= e(t('footerOriginal')) ?></span> <span class="icon icon-external" aria-hidden="true"></span></a>
     </div>
     <p class="copyright">© 2026 Jurina &amp; Kevin</p>
