@@ -44,8 +44,11 @@ $asset = fn (string $path) => e($path) . '?v=' . filemtime(__DIR__ . '/' . $path
   <meta name="theme-color" content="#f5f5f7">
   <title><?= e(t('pageTitle')) ?></title>
   <script src="<?= $asset('assets/js/theme-init.js') ?>"></script>
+  <link rel="stylesheet" href="<?= $asset('assets/vendor/leaflet/leaflet.css') ?>">
   <link rel="stylesheet" href="<?= $asset('assets/css/style.css') ?>">
   <script>window.TRANSLATIONS = <?= json_encode(TRANSLATIONS, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;</script>
+  <script src="<?= $asset('assets/vendor/leaflet/leaflet.js') ?>" defer></script>
+  <script src="<?= $asset('assets/js/map.js') ?>" defer></script>
   <script src="<?= $asset('assets/js/app.js') ?>" defer></script>
 </head>
 <body>

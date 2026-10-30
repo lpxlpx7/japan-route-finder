@@ -4,6 +4,8 @@ Look up IFR routes between airports in Japan. If the AIP publishes a route for t
 
 The routes come from [Jurina API](https://api.jurina.org) (`/v1/japan-route/route`). The PHP page calls the API from the server, so the API key never reaches the browser.
 
+Below the results there's a map of the route. The page draws it with Leaflet from the `geometry` coordinates in the API response. The API's own signed `map_url` and `map.png` aren't used, so the browser never sees the API's address, a signed link or the key.
+
 ## Requirements
 
 - PHP 8.1 or later with the `curl` extension
@@ -47,8 +49,10 @@ php -S 127.0.0.1:8090
 ```text
 index.php            page, and ?partial=1 for in-page searches
 src/bootstrap.php    config and the API request
-src/results.php      result cards
+src/results.php      result cards and the map's embedded coordinates
 src/i18n.php         English and Japanese text
+assets/js/map.js     route map
+assets/vendor/       Leaflet 1.9.4
 assets/              CSS, JS, fonts, icons
 ```
 
@@ -59,6 +63,8 @@ The look follows [jurina.org](https://www.jurina.org/): same colors, fonts, ligh
 The route search started in Kevin's [Japan Flight Dispatcher](https://github.com/kevin-git-2026/japan-flight-dispatcher). Thanks to Kevin for the original app. The upstream project doesn't declare a license, so no rights to its code are granted here.
 
 Published routes come from [jp-routes](https://jp-routes.vercel.app/). Generated routes use X-Plane NavData from Navigraph and are only for flight simulation.
+
+The map uses [Leaflet](https://leafletjs.com/) (BSD-2-Clause, see `assets/vendor/leaflet/LICENSE`) with tiles from GSI (地理院タイル), OpenStreetMap and Esri.
 
 Icons are [Ionicons](https://ionic.io/ionicons) (MIT, see `assets/icons/LICENSE-ionicons.txt`).
 

@@ -24,6 +24,7 @@ const applyLanguage = (selected) => {
   });
   document.querySelectorAll("[data-i18n-aria-label]").forEach((element) => element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel)));
   document.querySelectorAll(".language-button").forEach((button) => { button.checked = button.value === language; });
+  window.RouteMap?.refreshLanguage(t);
   try { localStorage.setItem("language", language); } catch (error) { /* Cookie below still works. */ }
   document.cookie = `language=${language}; path=/; max-age=31536000; samesite=lax`;
 };
@@ -38,6 +39,7 @@ const applyTheme = (preference) => {
   document.documentElement.dataset.theme = resolved;
   themeButton.querySelector(".theme-icon").innerHTML = `<span class="icon ${resolved === "dark" ? "icon-sun" : "icon-moon"}"></span>`;
   themeColor.content = resolved === "dark" ? "#000000" : "#f5f5f7";
+  window.RouteMap?.refreshTheme();
 };
 const savedTheme = () => { try { return localStorage.getItem("theme") || "system"; } catch (error) { return "system"; } };
 applyTheme(savedTheme());
@@ -84,6 +86,7 @@ const search = async ({ push = true } = {}) => {
     if (data.errorKey) return;
     results.innerHTML = data.html;
     results.hidden = false;
+    window.RouteMap?.mount(results);
     applyLanguage(language);
     if (push) history.pushState(null, "", `?${params}`);
     results.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
@@ -130,6 +133,14 @@ const showToast = (message) => {
   clearTimeout(showToast.timer);
   showToast.timer = setTimeout(() => toast.classList.remove("is-visible"), 1600);
 };
+// "Map" on a route card shows that route on the map below.
+results.addEventListener("click", (event) => {
+  const button = event.target.closest(".route-card [data-map-route]");
+  if (!button || !window.RouteMap?.card()) return;
+  window.RouteMap.select(Number(button.dataset.mapRoute));
+  window.RouteMap.card().scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+});
+
 results.addEventListener("click", async (event) => {
   const button = event.target.closest("[data-copy]");
   if (!button) return;
@@ -165,3 +176,7 @@ try {
   const stored = localStorage.getItem("language");
   if ((stored === "en" || stored === "ja") && stored !== language && !document.cookie.includes("language=")) applyLanguage(stored);
 } catch (error) { /* Nothing stored. */ }
+
+// Results rendered by the server on page load.
+if (!results.hidden) window.RouteMap?.mount(results);
+window.RouteMap?.refreshLanguage(t);

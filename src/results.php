@@ -36,6 +36,63 @@ function option_list(string $labelKey, string $fix, array $options): string
     return '<div class="option-group"><h4>' . i18n($labelKey, ['fix' => $fix]) . '</h4><ul>' . $items . '</ul></div>';
 }
 
+function map_button(int $index): string
+{
+    return '<button class="copy-button map-button" type="button" data-map-route="' . $index . '">'
+        . '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5V4l-6 2.5L9 4Zm0 0v13m6-10.5v13"/></svg>'
+        . i18n('showOnMap') . '</button>';
+}
+
+/** Only coordinates go to the browser: no map_url, map_image_url or anything else that names the API. */
+function map_geometry(?array $geometry): ?array
+{
+    if (!$geometry || empty($geometry['points']) || !isset($geometry['legs'])) {
+        return null;
+    }
+    $points = [];
+    foreach ($geometry['points'] as $point) {
+        $points[] = [
+            'ident' => (string) ($point['ident'] ?? ''),
+            'region' => (string) ($point['region'] ?? ''),
+            'lat' => (float) ($point['lat'] ?? 0),
+            'lon' => (float) ($point['lon'] ?? 0),
+            'kind' => (string) ($point['kind'] ?? 'fix'),
+            'major' => (bool) ($point['major'] ?? false),
+        ];
+    }
+    $legs = [];
+    foreach ($geometry['legs'] as $leg) {
+        $legs[] = ['from' => (int) ($leg['from'] ?? 0), 'to' => (int) ($leg['to'] ?? 0), 'airway' => (string) ($leg['airway'] ?? '')];
+    }
+    return ['points' => $points, 'legs' => $legs];
+}
+
+/** The large map under the results. Drawn by assets/js/map.js from the embedded geometry. */
+function map_panel(array $routes): string
+{
+    $items = array_map(fn ($route) => ['route' => (string) $route['route'], 'geometry' => map_geometry($route['geometry'] ?? null)], $routes);
+    if (!array_filter($items, fn ($item) => $item['geometry'] !== null)) {
+        return '';
+    }
+    $tabs = '';
+    if (count($items) > 1) {
+        foreach ($items as $index => $item) {
+            $tabs .= '<button type="button" role="tab" data-map-route="' . $index . '" title="' . e($item['route']) . '" aria-selected="' . ($index === 0 ? 'true' : 'false') . '">'
+                . i18n('routeNumber', ['n' => $index + 1]) . '</button>';
+        }
+        $tabs = '<div class="map-tabs" role="tablist" aria-label="' . e(t('mapRoutes')) . '" data-i18n-aria-label="mapRoutes">' . $tabs . '</div>';
+    }
+    $json = json_encode($items, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+    return '<section class="map-card" aria-labelledby="map-title"><div class="map-card-head">'
+        . '<h3 id="map-title">' . i18n('mapTitle') . '</h3>' . $tabs
+        . '<div class="map-toggles"><label><input type="checkbox" data-map-toggle="wp" checked> ' . i18n('mapWaypoints') . '</label>'
+        . '<label><input type="checkbox" data-map-toggle="awy" checked> ' . i18n('mapAirways') . '</label></div></div>'
+        . '<div class="route-map" role="region" aria-label="' . e(t('mapTitle')) . '" data-i18n-aria-label="mapTitle"></div>'
+        . '<p class="map-route-string"></p>'
+        . i18n('mapHint', [], 'p', ' class="map-hint"')
+        . '<script type="application/json" class="route-map-data">' . $json . '</script></section>';
+}
+
 function render_results(array $query, ?array $response): string
 {
     [$dep, $arr, $eobt] = [$query['dep'], $query['arr'], $query['eobt']];
@@ -62,7 +119,8 @@ function render_results(array $query, ?array $response): string
             . '<div class="badges"><span class="badge">' . $count . '</span>' . $eobtBadge . '</div></div><div class="route-list">';
         foreach ($routes as $index => $route) {
             $html .= '<article class="route-card"><div class="route-card-head"><span class="route-number">'
-                . i18n('routeNumber', ['n' => $index + 1]) . '</span>' . copy_button($route['route']) . '</div>'
+                . i18n('routeNumber', ['n' => $index + 1]) . '</span><span class="card-actions">'
+                . (isset($route['geometry']) ? map_button($index) : '') . copy_button($route['route']) . '</span></div>'
                 . '<p class="route-string">' . e($route['route']) . '</p><dl class="route-meta">'
                 . time_meta($route['time_restriction'] ?? '')
                 . meta_item('altitude', $route['altitude'] ?? '')
@@ -70,7 +128,7 @@ function render_results(array $query, ?array $response): string
                 . (($route['remarks'] ?? '') !== '' ? meta_item('remarks', $route['remarks']) : '')
                 . '</dl></article>';
         }
-        return $html . '</div>' . $footer;
+        return $html . '</div>' . $footer . map_panel($routes);
     }
 
     if ($source === 'generated' && isset($data['generated'])) {
@@ -87,7 +145,8 @@ function render_results(array $query, ?array $response): string
         return '<div class="result-head"><p class="eyebrow">' . i18n('kickerGenerated') . '</p>' . $pair
             . '<div class="badges">' . $eobtBadge . '</div></div>'
             . '<article class="route-card route-card-generated"><div class="route-card-head"><span class="route-number">'
-            . i18n('generatedLabel') . '</span>' . copy_button($route['route']) . '</div>'
+            . i18n('generatedLabel') . '</span><span class="card-actions">'
+            . (isset($route['geometry']) ? map_button(0) : '') . copy_button($route['route']) . '</span></div>'
             . '<p class="route-string">' . e($route['route']) . '</p>'
             . '<dl class="route-meta">'
             . '<div class="meta-item"><dt>' . i18n('distance') . '</dt><dd>' . e((string) round((float) ($route['distance_nm'] ?? 0))) . ' NM</dd></div>'
@@ -100,7 +159,7 @@ function render_results(array $query, ?array $response): string
             . '</div>'
             . ($warnings !== '' ? '<div class="route-notes"><h4>' . i18n('notes') . '</h4><ul>' . $warnings . '</ul></div>' : '')
             . i18n('generatedNote', [], 'p', ' class="route-scope"')
-            . '</article>' . $footer;
+            . '</article>' . $footer . map_panel([$route]);
     }
 
     if ($source === 'aip_time_mismatch') {
