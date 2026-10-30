@@ -1,9 +1,10 @@
-@font-face { font-family: "SF Pro Text Local"; src: url("../fonts/SF-Pro-Text-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
-@font-face { font-family: "SF Pro Text Local"; src: url("../fonts/SF-Pro-Text-Semibold.otf") format("opentype"); font-weight: 600; font-display: swap; }
-@font-face { font-family: "SF Pro Display Local"; src: url("../fonts/SF-Pro-Display-Semibold.otf") format("opentype"); font-weight: 600; font-display: swap; }
-@font-face { font-family: "SF Pro Display Local"; src: url("../fonts/SF-Pro-Display-Bold.otf") format("opentype"); font-weight: 700; font-display: swap; }
-@font-face { font-family: "GenShin Gothic"; src: url("../fonts/GenShinGothic-P-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
-@font-face { font-family: "GenShin Gothic"; src: url("../fonts/GenShinGothic-P-Bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "SF Pro Text Local"; src: url("../../fonts/en/pro/SF-Pro-Text-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "SF Pro Text Local"; src: url("../../fonts/en/pro/SF-Pro-Text-Semibold.otf") format("opentype"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "SF Pro Display Local"; src: url("../../fonts/en/pro/SF-Pro-Display-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "SF Pro Display Local"; src: url("../../fonts/en/pro/SF-Pro-Display-Semibold.otf") format("opentype"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "SF Pro Display Local"; src: url("../../fonts/en/pro/SF-Pro-Display-Bold.otf") format("opentype"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "GenShin Gothic"; src: url("../../fonts/jp/GenShinGothic-P-Regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "GenShin Gothic"; src: url("../../fonts/jp/GenShinGothic-P-Bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
 
 /* ---------- Tokens (shared with jurina.org) ---------- */
 :root {
@@ -80,6 +81,10 @@ button, input { font: inherit; color: inherit; letter-spacing: inherit; }
 .brand { font-size: 17px; font-weight: 600; white-space: nowrap; }
 .nav-right, .language-switch { display: flex; align-items: center; }
 .nav-right { gap: 22px; }
+.nav-links { display: flex; gap: 22px; font-size: 12px; letter-spacing: -.01em; }
+.nav-links a { opacity: .72; transition: opacity .2s ease; white-space: nowrap; }
+.nav-links a:hover, .nav-links a.is-active { opacity: 1; }
+.nav-links a.is-active { font-weight: 600; }
 .language-switch { gap: 14px; margin: 0; padding: 0; border: 0; color: var(--muted); font-size: 12px; }
 .language-switch legend, .language-button { position: absolute; width: 1px; height: 1px; margin: -1px; clip: rect(0 0 0 0); overflow: hidden; }
 .language-option { cursor: pointer; transition: color .2s ease; }
@@ -123,6 +128,44 @@ html[lang="ja"] .field > span { letter-spacing: .02em; }
 .field-time input { min-height: 44px; font-variant-numeric: tabular-nums; }
 .field-hint { margin: 0 0 10px; color: var(--muted); font-size: 14px; line-height: 1.4; }
 .form-error { min-height: 1.4em; margin: 14px 0 0; color: #e30000; font-size: 14px; }
+.form-options { margin-top: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; }
+.form-options .field-hint { margin: 0; }
+.form-row-end { grid-template-columns: 1fr auto; }
+
+/* ---------- iOS switch (same control as Jurina API's map page) ----------
+   Track fades to green; the knob slides on a spring and stretches while pressed,
+   toward the side it is about to travel, like UISwitch. */
+.switch-row { position: relative; display: inline-flex; align-items: center; gap: 10px; min-height: 32px; font-size: 15px; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.switch-row input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; pointer-events: none; }
+.switch { --knob: 22px; --travel: 18px; --stretch: 6px; position: relative; flex: none; width: 44px; height: 26px; border-radius: 999px; background: rgba(120,120,128,.16); box-shadow: inset 0 0 0 1.5px rgba(120,120,128,.1); transition: background-color .25s ease, box-shadow .25s ease; }
+.switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: var(--knob); height: var(--knob); border-radius: 999px; background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,.15), 0 3px 1px rgba(0,0,0,.06), 0 0 0 .5px rgba(0,0,0,.04); transition: transform .5s cubic-bezier(.28,1.18,.42,1), width .3s cubic-bezier(.28,1.18,.42,1); }
+[data-theme="dark"] .switch { background: rgba(120,120,128,.32); box-shadow: none; }
+.switch-row input:checked + .switch { background: #34c759; box-shadow: inset 0 0 0 1.5px transparent; }
+[data-theme="dark"] .switch-row input:checked + .switch { background: #30d158; }
+.switch-row input:checked + .switch::after { transform: translateX(var(--travel)); }
+.switch-row:active .switch::after { width: calc(var(--knob) + var(--stretch)); }
+.switch-row:active input:checked + .switch::after { transform: translateX(calc(var(--travel) - var(--stretch))); }
+.switch-row input:focus-visible + .switch { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* ---------- Segmented control and select ---------- */
+.segmented-field { min-width: 0; margin: 0; padding: 0; border: 0; }
+.segmented-field legend { padding: 0; margin-bottom: 6px; color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+html[lang="ja"] .segmented-field legend { letter-spacing: .02em; }
+.segmented { position: relative; min-height: 56px; padding: 3px; border-radius: var(--radius-field); display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; gap: 2px; background: var(--surface-2); }
+.segmented label { position: relative; display: grid; place-items: center; cursor: pointer; }
+.segmented input { position: absolute; opacity: 0; pointer-events: none; }
+.segmented span { width: 100%; height: 100%; padding: 0 14px; border-radius: 11px; display: grid; place-items: center; color: var(--muted); font-size: 15px; transition: background-color .25s ease, color .25s ease, box-shadow .25s ease; }
+.segmented input:checked + span { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: 0 3px 8px rgba(0,0,0,.12), 0 3px 1px rgba(0,0,0,.04); }
+[data-theme="dark"] .segmented input:checked + span { background: #636366; }
+.segmented input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: 2px; }
+.select-shell { position: relative; display: block; }
+.select-shell::after { content: ""; position: absolute; right: 18px; top: 50%; width: 8px; height: 8px; border-right: 1.8px solid var(--muted); border-bottom: 1.8px solid var(--muted); transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+.select-shell select { width: 100%; min-height: 56px; padding: 0 44px 0 18px; border: 1px solid transparent; border-radius: var(--radius-field); background: var(--surface-2); color: var(--ink); font: 600 20px/1 var(--display-font); letter-spacing: .03em; appearance: none; -webkit-appearance: none; cursor: pointer; outline: none; transition: border-color .2s ease, opacity .2s ease; }
+.select-shell select:focus { border-color: var(--blue); }
+.select-shell select:disabled { opacity: .55; cursor: default; }
+.transfer-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 1fr); align-items: end; gap: 12px; }
+.transfer-fields input[name="icao"] { font: 600 28px/1 var(--display-font); letter-spacing: .04em; text-transform: uppercase; }
+.transfer-fields input[name="icao"]::placeholder { color: var(--line); }
 [data-theme="dark"] .form-error { color: #ff6961; }
 .form-error:empty { min-height: 0; margin: 0; }
 
@@ -198,6 +241,26 @@ html[lang="ja"] .field > span { letter-spacing: .02em; }
 .footer-links { margin-block: 14px; display: flex; flex-wrap: wrap; gap: 8px 24px; }
 .footer-links a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
 
+/* ---------- Transfer altitudes ---------- */
+.route-transfer { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+.route-transfer-title { margin: 0 0 12px; color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .04em; }
+.transfer-sides { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.transfer-side { min-width: 0; padding: 14px 16px; border-radius: var(--radius-field); background: var(--surface-2); }
+.transfer-side h4 { margin: 0 0 8px; font-size: 14px; font-weight: 600; }
+.transfer-group + .transfer-group { margin-top: 14px; }
+.transfer-route { margin: 0 0 6px; font: 600 14px/1.45 var(--mono); overflow-wrap: anywhere; }
+.transfer-card .transfer-route { font-size: 17px; }
+.table-scroll { overflow-x: auto; }
+.transfer-table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.4; }
+.transfer-table th { padding: 6px 12px 6px 0; color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .04em; text-align: left; white-space: nowrap; }
+.transfer-table td { padding: 7px 12px 7px 0; border-top: 1px solid var(--line); vertical-align: top; }
+.transfer-table th:last-child, .transfer-table td:last-child { padding-right: 0; }
+.transfer-table .mono { font-family: var(--mono); white-space: nowrap; }
+.transfer-table .strong { font-weight: 600; }
+.transfer-table .muted { color: var(--muted); font-size: 12px; }
+.transfer-empty { margin: 0; color: var(--muted); font-size: 14px; }
+.results > .route-notes { margin-bottom: 16px; }
+
 /* ---------- Route map ---------- */
 .card-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
 .map-card { margin-top: 28px; overflow: hidden; border-radius: var(--radius-tile); background: var(--surface); box-shadow: var(--tile-shadow); scroll-margin-top: 64px; }
@@ -208,9 +271,8 @@ html[lang="ja"] .field > span { letter-spacing: .02em; }
 .map-tabs button:hover { background: rgba(127,127,127,.12); }
 .map-tabs button[aria-selected="true"] { background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 0 0 .5px rgba(0,0,0,.04); font-weight: 600; }
 [data-theme="dark"] .map-tabs button[aria-selected="true"] { background: #3a3a3c; }
-.map-toggles { margin-left: auto; display: flex; gap: 16px; color: var(--muted); font-size: 13px; }
-.map-toggles label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
-.map-toggles input { margin: 0; accent-color: var(--button); }
+.map-toggles { margin-left: auto; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.map-toggles .switch-row { font-size: 13px; color: var(--muted); }
 /* Leaflet's panes stack at z-index 400+, so keep them below the sticky header. */
 .route-map { position: relative; z-index: 0; isolation: isolate; height: min(68vh, 640px); min-height: 380px; background: var(--surface-2); font-family: var(--font); }
 .map-route-string { margin: 0; padding: 16px 24px 0; font: 600 15px/1.5 var(--mono); overflow-wrap: anywhere; }
@@ -267,7 +329,13 @@ html[lang="ja"] .field > span { letter-spacing: .02em; }
 @media (max-width: 734px) {
   :root { --gutter: 20px; --radius-tile: 24px; }
   body { font-size: 16px; }
-  .nav-right { gap: 16px; }
+  .nav-right { gap: 14px; }
+  .nav-links { gap: 14px; }
+  .brand { font-size: 0; }
+  .brand::before { content: "JRF"; font-size: 17px; }
+  .transfer-fields { grid-template-columns: 1fr; }
+  .form-row-end { grid-template-columns: 1fr; }
+  .transfer-sides { grid-template-columns: 1fr; }
   .hero { padding-block: 48px 40px; }
   .hero h1 { font-size: clamp(42px, 12vw, 56px); }
   .lead { font-size: 17px; }

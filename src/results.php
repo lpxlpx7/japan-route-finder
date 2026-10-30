@@ -85,15 +85,15 @@ function map_panel(array $routes): string
     $json = json_encode($items, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
     return '<section class="map-card" aria-labelledby="map-title"><div class="map-card-head">'
         . '<h3 id="map-title">' . i18n('mapTitle') . '</h3>' . $tabs
-        . '<div class="map-toggles"><label><input type="checkbox" data-map-toggle="wp" checked> ' . i18n('mapWaypoints') . '</label>'
-        . '<label><input type="checkbox" data-map-toggle="awy" checked> ' . i18n('mapAirways') . '</label></div></div>'
+        . '<div class="map-toggles">' . switch_control('map-wp', 'mapWaypoints', true, ' data-map-toggle="wp"')
+        . switch_control('map-awy', 'mapAirways', true, ' data-map-toggle="awy"') . '</div></div>'
         . '<div class="route-map" role="region" aria-label="' . e(t('mapTitle')) . '" data-i18n-aria-label="mapTitle"></div>'
         . '<p class="map-route-string"></p>'
         . i18n('mapHint', [], 'p', ' class="map-hint"')
         . '<script type="application/json" class="route-map-data">' . $json . '</script></section>';
 }
 
-function render_results(array $query, ?array $response): string
+function render_results(array $query, ?array $response, ?array $transfers = null): string
 {
     [$dep, $arr, $eobt] = [$query['dep'], $query['arr'], $query['eobt']];
     $pair = '<h2 class="result-pair">' . e($dep) . '<svg viewBox="0 0 40 16" aria-hidden="true"><path d="M2 8h34m-6-6 6 6-6 6"/></svg>' . e($arr) . '</h2>';
@@ -126,7 +126,9 @@ function render_results(array $query, ?array $response): string
                 . meta_item('altitude', $route['altitude'] ?? '')
                 . meta_item('aircraft', $route['aircraft'] ?? '')
                 . (($route['remarks'] ?? '') !== '' ? meta_item('remarks', $route['remarks']) : '')
-                . '</dl></article>';
+                . '</dl>'
+                . ($transfers !== null ? route_transfer_block($dep, $arr, $route['route'], $transfers) : '')
+                . '</article>';
         }
         return $html . '</div>' . $footer . map_panel($routes);
     }
@@ -158,6 +160,7 @@ function render_results(array $query, ?array $response): string
             . option_list('approachOptions', $last, $route['approach_options'] ?? [])
             . '</div>'
             . ($warnings !== '' ? '<div class="route-notes"><h4>' . i18n('notes') . '</h4><ul>' . $warnings . '</ul></div>' : '')
+            . ($transfers !== null ? route_transfer_block($dep, $arr, $route['route'], $transfers) : '')
             . i18n('generatedNote', [], 'p', ' class="route-scope"')
             . '</article>' . $footer . map_panel([$route]);
     }

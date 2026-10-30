@@ -4,6 +4,8 @@ Look up IFR routes between airports in Japan. If the AIP publishes a route for t
 
 The routes come from [Jurina API](https://api.jurina.org) (`/v1/japan-route/route`). The PHP page calls the API from the server, so the API key never reaches the browser.
 
+Turn on "Transfer altitudes" to also get the ATC handoff points and altitudes (`/v1/japan-route/transfer`) for each route's first and last fix. `transfer.php` looks them up on their own: enter an airport, pick arrival or departure, and choose a fix from the list, or leave it on "All fixes".
+
 Below the results there's a map of the route. The page draws it with Leaflet from the `geometry` coordinates in the API response. The API's own signed `map_url` and `map.png` aren't used, so the browser never sees the API's address, a signed link or the key.
 
 ## Requirements
@@ -47,13 +49,20 @@ php -S 127.0.0.1:8090
 ## Files
 
 ```text
-index.php            page, and ?partial=1 for in-page searches
-src/bootstrap.php    config and the API request
-src/results.php      result cards and the map's embedded coordinates
+index.php            route search, and ?partial=1 for in-page searches
+transfer.php         transfer altitudes by airport, side and fix
+src/bootstrap.php    config and the API requests (run in parallel)
+src/layout.php       shared head, nav, footer and the iOS switch
+src/results.php      route cards and the map's embedded coordinates
+src/transfer.php     transfer altitude tables
 src/i18n.php         English and Japanese text
+assets/js/common.js  language, theme, copy
+assets/js/app.js     route search page
+assets/js/transfer.js transfer page
 assets/js/map.js     route map
 assets/vendor/       Leaflet 1.9.4
-assets/              CSS, JS, fonts, icons
+fonts/               SF Pro (en/pro) and GenShin Gothic (jp), as on jurina.org
+assets/              CSS and icons
 ```
 
 The look follows [jurina.org](https://www.jurina.org/): same colors, fonts, light/dark theme and EN/日本語 switch.

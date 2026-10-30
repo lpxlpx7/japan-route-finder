@@ -8,6 +8,7 @@ $query = [
     'dep' => normalize_icao((string) ($_GET['dep'] ?? '')),
     'arr' => normalize_icao((string) ($_GET['arr'] ?? '')),
     'eobt' => trim((string) ($_GET['eobt'] ?? '')),
+    'transfer' => ($_GET['transfer'] ?? '') === '1',
 ];
 $searched = isset($_GET['dep']) || isset($_GET['arr']);
 
@@ -23,49 +24,30 @@ if ($searched) {
         $error = 'errorEobt';
     }
 }
-$results = $searched && $error === null ? render_results($query, fetch_route($query['dep'], $query['arr'], $query['eobt'])) : '';
+
+$results = '';
+if ($searched && $error === null) {
+    $response = fetch_route($query['dep'], $query['arr'], $query['eobt']);
+    $transfers = null;
+    if ($query['transfer'] && $response['ok']) {
+        $data = $response['data'];
+        $routes = array_column($data['source'] === 'aip' ? ($data['aip_routes'] ?? []) : (isset($data['generated']) ? [$data['generated']] : []), 'route');
+        $transfers = fetch_transfers(route_transfer_lookups($query['dep'], $query['arr'], $routes));
+    }
+    $results = render_results($query, $response, $transfers);
+}
 
 // The page script fetches just the results when a search is made without a reload.
 if (isset($_GET['partial'])) {
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store');
-    echo json_encode(['error' => $error ? t($error) : null, 'errorKey' => $error, 'html' => $results], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['errorKey' => $error, 'html' => $results], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-$asset = fn (string $path) => e($path) . '?v=' . filemtime(__DIR__ . '/' . $path);
+page_start('routes', 'Published AIP routes between Japanese airports, with a generated reference route when none is published.',
+    ['assets/vendor/leaflet/leaflet.js', 'assets/js/map.js', 'assets/js/app.js'], ['assets/vendor/leaflet/leaflet.css']);
 ?>
-<!doctype html>
-<html lang="<?= $language ?>">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Published AIP routes between Japanese airports, with a generated reference route when none is published.">
-  <meta name="theme-color" content="#f5f5f7">
-  <title><?= e(t('pageTitle')) ?></title>
-  <script src="<?= $asset('assets/js/theme-init.js') ?>"></script>
-  <link rel="stylesheet" href="<?= $asset('assets/vendor/leaflet/leaflet.css') ?>">
-  <link rel="stylesheet" href="<?= $asset('assets/css/style.css') ?>">
-  <script>window.TRANSLATIONS = <?= json_encode(TRANSLATIONS, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;</script>
-  <script src="<?= $asset('assets/vendor/leaflet/leaflet.js') ?>" defer></script>
-  <script src="<?= $asset('assets/js/map.js') ?>" defer></script>
-  <script src="<?= $asset('assets/js/app.js') ?>" defer></script>
-</head>
-<body>
-  <header class="site-header">
-    <nav class="nav shell" aria-label="Primary navigation">
-      <a class="brand" href="./" data-i18n="brand"><?= e(t('brand')) ?></a>
-      <div class="nav-right">
-        <fieldset class="language-switch" aria-label="<?= e(t('languageLabel')) ?>" data-i18n-aria-label="languageLabel">
-          <legend data-i18n="languageLabel"><?= e(t('languageLabel')) ?></legend>
-          <label class="language-option"><input class="language-button" type="radio" name="language" value="en"<?= $language === 'en' ? ' checked' : '' ?>><span>EN</span></label>
-          <label class="language-option"><input class="language-button" type="radio" name="language" value="ja"<?= $language === 'ja' ? ' checked' : '' ?>><span>日本語</span></label>
-        </fieldset>
-        <button class="theme-button" type="button" aria-label="<?= e(t('themeLabel')) ?>" data-i18n-aria-label="themeLabel"><span class="theme-icon" aria-hidden="true"><span class="icon icon-moon"></span></span></button>
-      </div>
-    </nav>
-  </header>
-
   <main>
     <section class="hero shell">
       <h1 data-i18n="heroTitle"><?= t('heroTitle') ?></h1>
@@ -84,6 +66,10 @@ $asset = fn (string $path) => e($path) . '?v=' . filemtime(__DIR__ . '/' . $path
             <span data-i18n="arrival"><?= e(t('arrival')) ?></span>
             <input name="arr" type="text" value="<?= e($query['arr']) ?>" placeholder="RJBB" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" required>
           </label>
+        </div>
+        <div class="form-options">
+          <?= switch_control('transfer', 'transferToggle', $query['transfer']) ?>
+          <p class="field-hint" data-i18n="transferToggleHint"><?= e(t('transferToggleHint')) ?></p>
         </div>
         <div class="form-row">
           <label class="field field-time">
@@ -121,17 +107,4 @@ $asset = fn (string $path) => e($path) . '?v=' . filemtime(__DIR__ . '/' . $path
       </div>
     </section>
   </main>
-
-  <footer class="site-footer shell">
-    <p class="footer-notice" data-i18n="footerNotice"><?= e(t('footerNotice')) ?></p>
-    <div class="footer-links">
-      <a href="https://www.jurina.org/" target="_blank" rel="noopener noreferrer"><span data-i18n="footerHome"><?= e(t('footerHome')) ?></span> <span class="icon icon-external" aria-hidden="true"></span></a>
-      <a href="https://github.com/lpxlpx7/japan-route-finder" target="_blank" rel="noopener noreferrer"><span data-i18n="footerSource"><?= e(t('footerSource')) ?></span> <span class="icon icon-external" aria-hidden="true"></span></a>
-      <a href="https://github.com/kevin-git-2026/japan-flight-dispatcher" target="_blank" rel="noopener noreferrer"><span data-i18n="footerOriginal"><?= e(t('footerOriginal')) ?></span> <span class="icon icon-external" aria-hidden="true"></span></a>
-    </div>
-    <p class="copyright">© 2026 Jurina &amp; Kevin</p>
-  </footer>
-
-  <div class="toast" role="status" aria-live="polite"></div>
-</body>
-</html>
+<?php page_end();
