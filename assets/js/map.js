@@ -203,7 +203,8 @@ window.RouteMap = (() => {
     const data = card?.querySelector(".route-map-data");
     if (!card || !data || !window.L) return;
     const element = card.querySelector(".route-map");
-    const map = L.map(element, { zoomControl: false, scrollWheelZoom: false, worldCopyJump: true, maxZoom: 18, zoomSnap: 0.5 }).setView([36.5, 137.5], 5);
+    // The wheel zooms the map whenever the pointer is over it; outside it scrolls the page.
+    const map = L.map(element, { zoomControl: false, scrollWheelZoom: true, wheelPxPerZoomLevel: 90, worldCopyJump: true, maxZoom: 18, zoomSnap: 0.5 }).setView([36.5, 137.5], 5);
     map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
     const tiles = {};
     Object.entries(BASEMAPS).forEach(([key, base]) => {
@@ -219,9 +220,6 @@ window.RouteMap = (() => {
       const key = Object.keys(tiles).find((name) => tiles[name] === event.layer);
       try { localStorage.setItem(BASEMAP_KEY, key); } catch (error) { /* Choice lasts for this page view. */ }
     });
-    // The page scrolls past the map until someone clicks into it.
-    map.on("click", () => map.scrollWheelZoom.enable());
-    element.addEventListener("mouseleave", () => map.scrollWheelZoom.disable());
     const updateZoom = () => element.classList.toggle("show-minor", map.getZoom() >= MINOR_LABEL_ZOOM);
     map.on("zoomend", () => { updateZoom(); drawAirwayLabels(); });
     updateZoom();

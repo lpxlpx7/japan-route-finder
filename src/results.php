@@ -93,7 +93,7 @@ function map_panel(array $routes): string
         . '<script type="application/json" class="route-map-data">' . $json . '</script></section>';
 }
 
-function render_results(array $query, ?array $response, ?array $transfers = null): string
+function render_results(array $query, ?array $response, ?array $transfers = null, ?array $atis = null): string
 {
     [$dep, $arr, $eobt] = [$query['dep'], $query['arr'], $query['eobt']];
     $pair = '<h2 class="result-pair">' . e($dep) . '<svg viewBox="0 0 40 16" aria-hidden="true"><path d="M2 8h34m-6-6 6 6-6 6"/></svg>' . e($arr) . '</h2>';
@@ -107,6 +107,7 @@ function render_results(array $query, ?array $response, ?array $transfers = null
 
     $data = $response['data'];
     $source = $data['source'] ?? 'none';
+    $atisBlock = $atis !== null ? render_atis_block($dep, $arr, $atis) : '';
     $footer = '<p class="data-line">' . i18n('dataCycles', ['navdata' => $data['navdata_cycle'] ?? '—', 'transfer' => $data['transfer_cycle'] ?? '—']) . '</p>';
     if (in_array($data['aip_data'] ?? '', ['stale', 'file'], true)) {
         $footer = '<p class="data-line">' . i18n('dataStale') . '</p>' . $footer;
@@ -130,7 +131,7 @@ function render_results(array $query, ?array $response, ?array $transfers = null
                 . ($transfers !== null ? route_transfer_block($dep, $arr, $route['route'], $transfers) : '')
                 . '</article>';
         }
-        return $html . '</div>' . $footer . map_panel($routes);
+        return $html . '</div>' . $footer . $atisBlock . map_panel($routes);
     }
 
     if ($source === 'generated' && isset($data['generated'])) {
@@ -162,15 +163,15 @@ function render_results(array $query, ?array $response, ?array $transfers = null
             . ($warnings !== '' ? '<div class="route-notes"><h4>' . i18n('notes') . '</h4><ul>' . $warnings . '</ul></div>' : '')
             . ($transfers !== null ? route_transfer_block($dep, $arr, $route['route'], $transfers) : '')
             . i18n('generatedNote', [], 'p', ' class="route-scope"')
-            . '</article>' . $footer . map_panel([$route]);
+            . '</article>' . $footer . $atisBlock . map_panel([$route]);
     }
 
     if ($source === 'aip_time_mismatch') {
         return '<div class="result-head"><p class="eyebrow">' . i18n('kickerMismatch') . '</p>' . $pair
             . '<div class="badges">' . $eobtBadge . '</div></div><div class="notice-card">'
-            . i18n('mismatchText', ['eobt' => $eobt], 'p') . i18n('mismatchHint', [], 'p', ' class="notice-hint"') . '</div>' . $footer;
+            . i18n('mismatchText', ['eobt' => $eobt], 'p') . i18n('mismatchHint', [], 'p', ' class="notice-hint"') . '</div>' . $footer . $atisBlock;
     }
 
     return '<div class="result-head"><p class="eyebrow">' . i18n('kickerNone') . '</p>' . $pair . '</div><div class="notice-card">'
-        . i18n('noneText', ['dep' => $dep, 'arr' => $arr], 'p') . i18n('noneHint', [], 'p', ' class="notice-hint"') . '</div>' . $footer;
+        . i18n('noneText', ['dep' => $dep, 'arr' => $arr], 'p') . i18n('noneHint', [], 'p', ' class="notice-hint"') . '</div>' . $footer . $atisBlock;
 }

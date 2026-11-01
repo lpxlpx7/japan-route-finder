@@ -261,6 +261,55 @@ html[lang="ja"] .segmented-field legend { letter-spacing: .02em; }
 .transfer-empty { margin: 0; color: var(--muted); font-size: 14px; }
 .results > .route-notes { margin-bottom: 16px; }
 
+/* ---------- ATIS ---------- */
+.section-title { margin: 0 0 14px; font-size: 21px; font-weight: 600; letter-spacing: -.01em; }
+.atis-block { margin-top: 28px; }
+.result-name { margin: 6px 0 0; color: var(--muted); font-size: 19px; }
+#atis-form input[name="icao"] { padding-right: 52px; font: 600 20px/1 var(--display-font); letter-spacing: .01em; }
+
+/* Airport icons from each airport's own site. */
+.airport-icon { width: .8em; height: .8em; flex: none; border-radius: 22%; object-fit: contain; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.06); }
+.atis-logo { width: 44px; height: 44px; flex: none; padding: 5px; border-radius: 12px; display: grid; place-items: center; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.08); }
+.atis-logo .airport-icon { width: 100%; height: 100%; border-radius: 6px; box-shadow: none; }
+
+/* Airport picker: type to filter, or open the whole list with the arrow. */
+.combo { position: relative; display: block; }
+.combo-toggle { position: absolute; top: 6px; right: 6px; bottom: 6px; width: 44px; padding: 0; border: 0; border-radius: 10px; background: none; cursor: pointer; transition: background-color .2s ease; }
+.combo-toggle:hover { background: rgba(127,127,127,.12); }
+.combo-toggle::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; border-right: 1.8px solid var(--muted); border-bottom: 1.8px solid var(--muted); transform: translate(-50%, -70%) rotate(45deg); transition: transform .3s var(--ease-out); }
+.combo-toggle.is-open::after { transform: translate(-50%, -30%) rotate(225deg); }
+.combo-list { position: absolute; z-index: 20; top: calc(100% + 8px); left: 0; right: 0; max-height: 320px; margin: 0; padding: 6px; overflow-y: auto; list-style: none; border-radius: 16px; background: var(--glass); box-shadow: 0 2px 6px rgba(0,0,0,.06), 0 18px 48px rgba(0,0,0,.16), 0 0 0 .5px var(--glass-border); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px); animation: combo-in .25s var(--ease-out); }
+@keyframes combo-in { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
+.combo-list li { min-height: 42px; padding: 8px 12px; border-radius: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-size: 15px; }
+.combo-list li[hidden] { display: none; }
+.combo-list li b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.combo-list li span:last-child { color: var(--muted); }
+.combo-list li .airport-icon { width: 22px; height: 22px; border-radius: 6px; }
+.combo-list .airport-icon-blank { display: inline-block; background: var(--surface-2); box-shadow: none; }
+.combo-list li:hover, .combo-list li.is-active { background: rgba(127,127,127,.14); }
+.combo-list li[aria-selected="true"] b { color: var(--blue); }
+.atis-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+.atis-grid-single { grid-template-columns: 1fr; }
+.atis-card { min-width: 0; padding: 22px 24px; border-radius: var(--radius-tile); background: var(--surface); box-shadow: var(--tile-shadow); }
+.atis-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.atis-head h3 { margin: 0; font: 700 24px/1.1 var(--display-font); letter-spacing: .01em; }
+.atis-head .badges { margin: 0; flex: 1; }
+.atis-info { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.atis-letter { width: 44px; height: 44px; flex: none; border-radius: 12px; display: grid; place-items: center; background: var(--button); color: #fff; font: 700 24px/1 var(--display-font); }
+.atis-letter-small { width: 28px; height: 28px; border-radius: 8px; font-size: 15px; }
+.atis-text { margin: 16px 0 0; padding: 14px 16px; border-radius: var(--radius-field); background: var(--surface-2); font: 500 13.5px/1.55 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.atis-checked { margin: 10px 0 0; color: var(--muted); font-size: 12px; }
+.atis-empty .transfer-empty { margin-top: 8px; }
+.badge-warn { background: rgba(255,149,0,.14); box-shadow: none; color: var(--warn); }
+.atis-history { margin-top: 32px; }
+.atis-history-item { border-top: 1px solid var(--line); }
+.atis-history-item:last-child { border-bottom: 1px solid var(--line); }
+.atis-history-item summary { padding: 12px 4px; display: flex; align-items: center; gap: 12px; cursor: pointer; font-variant-numeric: tabular-nums; list-style: none; }
+.atis-history-item summary::-webkit-details-marker { display: none; }
+.atis-history-item summary::after { content: ""; width: 7px; height: 7px; margin-left: auto; border-right: 1.6px solid var(--muted); border-bottom: 1.6px solid var(--muted); transform: rotate(45deg); transition: transform .3s var(--ease-out); }
+.atis-history-item[open] summary::after { transform: rotate(225deg); }
+.atis-history-item .atis-text { margin: 0 0 14px; }
+
 /* ---------- Route map ---------- */
 .card-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
 .map-card { margin-top: 28px; overflow: hidden; border-radius: var(--radius-tile); background: var(--surface); box-shadow: var(--tile-shadow); scroll-margin-top: 64px; }
@@ -330,7 +379,8 @@ html[lang="ja"] .segmented-field legend { letter-spacing: .02em; }
   :root { --gutter: 20px; --radius-tile: 24px; }
   body { font-size: 16px; }
   .nav-right { gap: 14px; }
-  .nav-links { gap: 14px; }
+  .nav-links { gap: 12px; }
+  .language-switch { gap: 10px; }
   .brand { font-size: 0; }
   .brand::before { content: "JRF"; font-size: 17px; }
   .transfer-fields { grid-template-columns: 1fr; }

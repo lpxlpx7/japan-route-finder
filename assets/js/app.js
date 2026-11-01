@@ -5,7 +5,7 @@ const results = document.querySelector("#results");
 const formError = form.querySelector(".form-error");
 const submitButton = form.querySelector('button[type="submit"]');
 
-const fields = { dep: form.elements.dep, arr: form.elements.arr, eobt: form.elements.eobt, transfer: form.elements.transfer };
+const fields = { dep: form.elements.dep, arr: form.elements.arr, eobt: form.elements.eobt, transfer: form.elements.transfer, atis: form.elements.atis };
 const cleanIcao = (value) => value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4);
 
 const showError = (key) => {
@@ -36,6 +36,7 @@ const search = async ({ push = true } = {}) => {
   const params = new URLSearchParams({ dep: cleanIcao(fields.dep.value), arr: cleanIcao(fields.arr.value) });
   if (fields.eobt.value) params.set("eobt", fields.eobt.value);
   if (fields.transfer.checked) params.set("transfer", "1");
+  if (fields.atis.checked) params.set("atis", "1");
   pending?.abort();
   pending = new AbortController();
   setBusy(true);
@@ -81,6 +82,7 @@ window.addEventListener("popstate", () => {
   fields.arr.value = params.get("arr") || "";
   fields.eobt.value = params.get("eobt") || "";
   fields.transfer.checked = params.get("transfer") === "1";
+  fields.atis.checked = params.get("atis") === "1";
   if (fields.dep.value && fields.arr.value) search({ push: false });
   else results.hidden = true;
 });

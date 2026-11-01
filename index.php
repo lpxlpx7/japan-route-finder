@@ -9,6 +9,7 @@ $query = [
     'arr' => normalize_icao((string) ($_GET['arr'] ?? '')),
     'eobt' => trim((string) ($_GET['eobt'] ?? '')),
     'transfer' => ($_GET['transfer'] ?? '') === '1',
+    'atis' => ($_GET['atis'] ?? '') === '1',
 ];
 $searched = isset($_GET['dep']) || isset($_GET['arr']);
 
@@ -28,13 +29,14 @@ if ($searched) {
 $results = '';
 if ($searched && $error === null) {
     $response = fetch_route($query['dep'], $query['arr'], $query['eobt']);
+    $atis = $query['atis'] ? fetch_atis([$query['dep'], $query['arr']]) : null;
     $transfers = null;
     if ($query['transfer'] && $response['ok']) {
         $data = $response['data'];
         $routes = array_column($data['source'] === 'aip' ? ($data['aip_routes'] ?? []) : (isset($data['generated']) ? [$data['generated']] : []), 'route');
         $transfers = fetch_transfers(route_transfer_lookups($query['dep'], $query['arr'], $routes));
     }
-    $results = render_results($query, $response, $transfers);
+    $results = render_results($query, $response, $transfers, $atis);
 }
 
 // The page script fetches just the results when a search is made without a reload.
@@ -69,7 +71,8 @@ page_start('routes', 'Published AIP routes between Japanese airports, with a gen
         </div>
         <div class="form-options">
           <?= switch_control('transfer', 'transferToggle', $query['transfer']) ?>
-          <p class="field-hint" data-i18n="transferToggleHint"><?= e(t('transferToggleHint')) ?></p>
+          <?= switch_control('atis', 'atisToggle', $query['atis']) ?>
+          <p class="field-hint" data-i18n="optionsHint"><?= e(t('optionsHint')) ?></p>
         </div>
         <div class="form-row">
           <label class="field field-time">

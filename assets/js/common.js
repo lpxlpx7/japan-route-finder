@@ -72,6 +72,9 @@ window.App = (() => {
     showToast(t("copied"));
   });
 
+  /** Fetch one of this site's JSON endpoints. */
+  const request = async (url, { signal } = {}) => (await fetch(url, { signal, headers: { Accept: "application/json" } })).json();
+
   const smoothScroll = (element) => element.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
 
   // Language saved on another page of jurina.org, but no cookie yet.
@@ -80,5 +83,5 @@ window.App = (() => {
     if ((stored === "en" || stored === "ja") && stored !== language && !document.cookie.includes("language=")) applyLanguage(stored);
   } catch (error) { /* Nothing stored. */ }
 
-  return { t, escapeHtml, applyLanguage, language: () => language, showToast, smoothScroll };
+  return { t, escapeHtml, applyLanguage, language: () => language, showToast, smoothScroll, request };
 })();

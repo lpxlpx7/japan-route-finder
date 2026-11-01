@@ -6,7 +6,9 @@ The routes come from [Jurina API](https://api.jurina.org) (`/v1/japan-route/rout
 
 Turn on "Transfer altitudes" to also get the ATC handoff points and altitudes (`/v1/japan-route/transfer`) for each route's first and last fix. `transfer.php` looks them up on their own: enter an airport, pick arrival or departure, and choose a fix from the list, or leave it on "All fixes".
 
-Below the results there's a map of the route. The page draws it with Leaflet from the `geometry` coordinates in the API response. The API's own signed `map_url` and `map.png` aren't used, so the browser never sees the API's address, a signed link or the key.
+Turn on "ATIS" to also see the current ATIS for both airports. `atis.php` shows one airport's ATIS and its recent changes (`/v1/atis/`): type a code or name, or open the list, then search. Where an airport's own site has an icon (`assets/airports`, sources in `SOURCES.md` there), it replaces the ATIS letter on the card.
+
+Below the results there's a map of the route. Scroll over it to zoom. The page draws it with Leaflet from the `geometry` coordinates in the API response. The API's own signed `map_url` and `map.png` aren't used, so the browser never sees the API's address, a signed link or the key.
 
 ## Requirements
 
@@ -51,14 +53,18 @@ php -S 127.0.0.1:8090
 ```text
 index.php            route search, and ?partial=1 for in-page searches
 transfer.php         transfer altitudes by airport, side and fix
+atis.php             current ATIS and its history for one airport
 src/bootstrap.php    config and the API requests (run in parallel)
 src/layout.php       shared head, nav, footer and the iOS switch
 src/results.php      route cards and the map's embedded coordinates
 src/transfer.php     transfer altitude tables
+src/atis.php         ATIS cards, airport names and icons
 src/i18n.php         English and Japanese text
 assets/js/common.js  language, theme, copy
 assets/js/app.js     route search page
 assets/js/transfer.js transfer page
+assets/js/atis.js    ATIS page and its airport picker
+assets/airports/     airport icons from each operator's site
 assets/js/map.js     route map
 assets/vendor/       Leaflet 1.9.4
 fonts/               SF Pro (en/pro) and GenShin Gothic (jp), as on jurina.org

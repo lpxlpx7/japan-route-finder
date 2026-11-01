@@ -5,6 +5,7 @@ require_once __DIR__ . '/i18n.php';
 require_once __DIR__ . '/results.php';
 require_once __DIR__ . '/transfer.php';
 require_once __DIR__ . '/layout.php';
+require_once __DIR__ . '/atis.php';
 
 function app_config(): array
 {

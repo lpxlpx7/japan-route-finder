@@ -13,9 +13,9 @@ function asset(string $path): string
 function page_start(string $page, string $description, array $scripts, array $styles = []): void
 {
     global $language;
-    $titleKey = $page === 'transfer' ? 'transferPageTitle' : 'pageTitle';
+    $titleKey = ['transfer' => 'transferPageTitle', 'atis' => 'atisPageTitle'][$page] ?? 'pageTitle';
     $nav = '';
-    foreach (['routes' => ['./', 'navRoutes'], 'transfer' => ['transfer.php', 'navTransfer']] as $name => [$href, $key]) {
+    foreach (['routes' => ['./', 'navRoutes'], 'transfer' => ['transfer.php', 'navTransfer'], 'atis' => ['atis.php', 'navAtis']] as $name => [$href, $key]) {
         $nav .= '<a href="' . $href . '"' . ($name === $page ? ' class="is-active" aria-current="page"' : '') . '>' . i18n($key) . '</a>';
     }
     ?>
@@ -32,7 +32,9 @@ function page_start(string $page, string $description, array $scripts, array $st
   <link rel="stylesheet" href="<?= asset($style) ?>">
 <?php endforeach; ?>
   <link rel="stylesheet" href="<?= asset('assets/css/style.css') ?>">
-  <script>window.TRANSLATIONS = <?= json_encode(TRANSLATIONS, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;</script>
+  <script>
+    window.TRANSLATIONS = <?= json_encode(TRANSLATIONS, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+  </script>
   <script src="<?= asset('assets/js/common.js') ?>" defer></script>
 <?php foreach ($scripts as $script): ?>
   <script src="<?= asset($script) ?>" defer></script>
