@@ -8,6 +8,8 @@ Turn on "Transfer altitudes" to also get the ATC handoff points and altitudes (`
 
 Turn on "ATIS" to also see the current ATIS for both airports. `atis.php` shows one airport's ATIS and its recent changes (`/v1/atis/`): type a code or name, or open the list, then search. Where an airport's own site has an icon (`assets/airports`, sources in `SOURCES.md` there), it replaces the ATIS letter on the card.
 
+"Add to SimBrief" on each route card opens SimBrief's dispatch page (`dispatch.simbrief.com/options/custom`) prefilled with both airports, that route (arrival transfer points marked with their altitude, like `SPENS/13000`; departure ones are left out) and the runways read from the current ATIS (`origrwy`, `destrwy`), whatever the switches are set to. `index.php?simbrief=N` builds the link for card N, counting from 0 (`src/simbrief.php`).
+
 Below the results there's a map of the route. Scroll over it to zoom. The page draws it with Leaflet from the `geometry` coordinates in the API response. The API's own signed `map_url` and `map.png` aren't used, so the browser never sees the API's address, a signed link or the key.
 
 ## Requirements
@@ -59,6 +61,7 @@ src/layout.php       shared head, nav, footer and the iOS switch
 src/results.php      route cards and the map's embedded coordinates
 src/transfer.php     transfer altitude tables
 src/atis.php         ATIS cards, airport names and icons
+src/simbrief.php     SimBrief link: route with transfer altitudes, ATIS runways
 src/i18n.php         English and Japanese text
 assets/js/common.js  language, theme, copy
 assets/js/app.js     route search page

@@ -59,6 +59,34 @@ const search = async ({ push = true } = {}) => {
 };
 
 form.addEventListener("submit", (event) => { event.preventDefault(); search(); });
+
+// "Add to SimBrief" on a route card: the server builds the dispatch link for that route
+// (arrival transfer altitudes marked, ATIS runways), for the search the results came from.
+results.addEventListener("click", async (event) => {
+  const button = event.target.closest(".route-card [data-simbrief-route]");
+  if (!button || button.disabled) return;
+  const shown = new URLSearchParams(location.search);
+  const params = new URLSearchParams({ dep: shown.get("dep") || "", arr: shown.get("arr") || "", simbrief: button.dataset.simbriefRoute });
+  if (shown.get("eobt")) params.set("eobt", shown.get("eobt"));
+  // Opened now, while the click still counts, so popup blockers let it through.
+  const tab = window.open("", "_blank");
+  const label = button.querySelector("[data-i18n]");
+  button.disabled = true;
+  label.dataset.i18n = "simbriefBusy";
+  label.textContent = t(label.dataset.i18n);
+  try {
+    const data = await window.App.request(`./?${params}`);
+    if (data.errorKey || !data.url) { tab?.close(); window.App.showToast(t(data.errorKey || "errorService")); return; }
+    if (tab) { tab.opener = null; tab.location.href = data.url; } else location.href = data.url;
+  } catch (error) {
+    tab?.close();
+    window.App.showToast(t("errorService"));
+  } finally {
+    button.disabled = false;
+    label.dataset.i18n = "simbrief";
+    label.textContent = t(label.dataset.i18n);
+  }
+});
 [fields.dep, fields.arr].forEach((input) => input.addEventListener("input", () => {
   input.value = cleanIcao(input.value);
   showError("");

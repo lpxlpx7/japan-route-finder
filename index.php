@@ -26,6 +26,29 @@ if ($searched) {
     }
 }
 
+// "Add to SimBrief" on a route card (?simbrief=N, the card's index): that route with its arrival transfer
+// altitudes and the ATIS runways, as a link to SimBrief's dispatch page.
+if (isset($_GET['simbrief'])) {
+    $url = null;
+    if ($searched && $error === null) {
+        $response = fetch_route($query['dep'], $query['arr'], $query['eobt']);
+        $route = $response['ok'] ? simbrief_route($response['data'], max(0, (int) $_GET['simbrief'])) : '';
+        if (!$response['ok']) {
+            $error = 'errorService';
+        } elseif ($route === '') {
+            $error = 'simbriefNoRoute';
+        } else {
+            $lookups = array_filter(route_transfer_lookups($query['dep'], $query['arr'], [$route]), fn ($lookup) => $lookup[1] === 'arr');
+            $transfers = fetch_transfers($lookups);
+            $url = simbrief_url($query['dep'], $query['arr'], $route, $transfers, fetch_atis([$query['dep'], $query['arr']]));
+        }
+    }
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+    echo json_encode(['errorKey' => $error, 'url' => $url], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
 $results = '';
 if ($searched && $error === null) {
     $response = fetch_route($query['dep'], $query['arr'], $query['eobt']);
