@@ -4,8 +4,17 @@ declare(strict_types=1);
 /** SimBrief's dispatch page, prefilled from the query string (same names as the API: orig, dest, route, origrwy, destrwy). */
 const SIMBRIEF_DISPATCH = 'https://dispatch.simbrief.com/options/custom';
 
+/** The table writes altitudes as "at F160", "F200", "at A110" or "A90". → "F160", "F200", "A110", "A090". */
+function transfer_altitude_level(string $altitude): string
+{
+    if (!preg_match('/^\s*(?:AT\s*)?([FA])\s*(\d{2,3})\s*$/i', $altitude, $match)) {
+        return '';
+    }
+    return strtoupper($match[1]) . str_pad($match[2], 3, '0', STR_PAD_LEFT);
+}
+
 /**
- * "KAIHO Y56 SPENS" with an arrival handoff at SPENS → "KAIHO Y56 SPENS/13000". Only the arrival side's
+ * "KAIHO Y56 SPENS" with an arrival handoff at SPENS → "KAIHO Y56 SPENS/A130". Only the arrival side's
  * transfer altitudes are marked, and only at points that are in the route.
  */
 function route_with_transfer_altitudes(string $route, array $transfers): string
@@ -19,7 +28,7 @@ function route_with_transfer_altitudes(string $route, array $transfers): string
     foreach ($response && $response['ok'] ? ($response['data']['groups'] ?? []) : [] as $group) {
         foreach ($group['handoffs'] ?? [] as $handoff) {
             $point = strtoupper(trim((string) ($handoff['point'] ?? '')));
-            $altitude = strtoupper((string) preg_replace('/\s+/', '', (string) ($handoff['altitude'] ?? '')));
+            $altitude = transfer_altitude_level((string) ($handoff['altitude'] ?? ''));
             // The first table entry for a point wins.
             if ($point !== '' && $altitude !== '' && !isset($altitudes[$point])) {
                 $altitudes[$point] = $altitude;
