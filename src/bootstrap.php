@@ -6,6 +6,7 @@ require_once __DIR__ . '/results.php';
 require_once __DIR__ . '/transfer.php';
 require_once __DIR__ . '/layout.php';
 require_once __DIR__ . '/atis.php';
+require_once __DIR__ . '/simbrief.php';
 
 function app_config(): array
 {

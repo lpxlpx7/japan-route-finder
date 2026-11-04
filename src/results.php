@@ -121,7 +121,7 @@ function render_results(array $query, ?array $response, ?array $transfers = null
         foreach ($routes as $index => $route) {
             $html .= '<article class="route-card"><div class="route-card-head"><span class="route-number">'
                 . i18n('routeNumber', ['n' => $index + 1]) . '</span><span class="card-actions">'
-                . (isset($route['geometry']) ? map_button($index) : '') . copy_button($route['route']) . '</span></div>'
+                . (isset($route['geometry']) ? map_button($index) : '') . copy_button($route['route']) . simbrief_button($index) . '</span></div>'
                 . '<p class="route-string">' . e($route['route']) . '</p><dl class="route-meta">'
                 . time_meta($route['time_restriction'] ?? '')
                 . meta_item('altitude', $route['altitude'] ?? '')
@@ -149,7 +149,7 @@ function render_results(array $query, ?array $response, ?array $transfers = null
             . '<div class="badges">' . $eobtBadge . '</div></div>'
             . '<article class="route-card route-card-generated"><div class="route-card-head"><span class="route-number">'
             . i18n('generatedLabel') . '</span><span class="card-actions">'
-            . (isset($route['geometry']) ? map_button(0) : '') . copy_button($route['route']) . '</span></div>'
+            . (isset($route['geometry']) ? map_button(0) : '') . copy_button($route['route']) . simbrief_button(0) . '</span></div>'
             . '<p class="route-string">' . e($route['route']) . '</p>'
             . '<dl class="route-meta">'
             . '<div class="meta-item"><dt>' . i18n('distance') . '</dt><dd>' . e((string) round((float) ($route['distance_nm'] ?? 0))) . ' NM</dd></div>'
