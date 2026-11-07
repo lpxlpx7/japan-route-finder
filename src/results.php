@@ -67,10 +67,45 @@ function map_geometry(?array $geometry): ?array
     return ['points' => $points, 'legs' => $legs];
 }
 
-/** The large map under the results. Drawn by assets/js/map.js from the embedded geometry. */
-function map_panel(array $routes): string
+/**
+ * Every point along the route in flying order, airway names left out: "KAIHO Y56 SPENS" → "KAIHO ONC SPENS".
+ * Taken from the map geometry, so the airports and SID/STAR connections are dropped. Without geometry the
+ * route string is returned as it is.
+ */
+function route_points(array $route): string
 {
-    $items = array_map(fn ($route) => ['route' => (string) $route['route'], 'geometry' => map_geometry($route['geometry'] ?? null)], $routes);
+    $geometry = map_geometry($route['geometry'] ?? null);
+    if ($geometry === null) {
+        return (string) $route['route'];
+    }
+    $order = [];
+    foreach ($geometry['legs'] as $leg) {
+        foreach ([$leg['from'], $leg['to']] as $index) {
+            if (end($order) !== $index) {
+                $order[] = $index;
+            }
+        }
+    }
+    $idents = [];
+    foreach ($order as $index) {
+        $point = $geometry['points'][$index] ?? null;
+        if ($point && $point['kind'] !== 'airport' && $point['ident'] !== '' && end($idents) !== $point['ident']) {
+            $idents[] = $point['ident'];
+        }
+    }
+    return $idents ? implode(' ', $idents) : (string) $route['route'];
+}
+
+/** The route as the card shows it: as published, or every point when "All waypoints" is on. */
+function shown_route(array $route, bool $points): string
+{
+    return $points ? route_points($route) : (string) $route['route'];
+}
+
+/** The large map under the results. Drawn by assets/js/map.js from the embedded geometry. */
+function map_panel(array $routes, bool $points = false): string
+{
+    $items = array_map(fn ($route) => ['route' => shown_route($route, $points), 'geometry' => map_geometry($route['geometry'] ?? null)], $routes);
     if (!array_filter($items, fn ($item) => $item['geometry'] !== null)) {
         return '';
     }
@@ -107,6 +142,8 @@ function render_results(array $query, ?array $response, ?array $transfers = null
 
     $data = $response['data'];
     $source = $data['source'] ?? 'none';
+    $points = (bool) ($query['points'] ?? false);
+    $pointsBadge = $points ? '<span class="badge">' . i18n('pointsBadge') . '</span>' : '';
     $atisBlock = $atis !== null ? render_atis_block($dep, $arr, $atis) : '';
     $footer = '<p class="data-line">' . i18n('dataCycles', ['navdata' => $data['navdata_cycle'] ?? '—', 'transfer' => $data['transfer_cycle'] ?? '—']) . '</p>';
     if (in_array($data['aip_data'] ?? '', ['stale', 'file'], true)) {
@@ -117,12 +154,13 @@ function render_results(array $query, ?array $response, ?array $transfers = null
         $routes = $data['aip_routes'] ?? [];
         $count = count($routes) === 1 ? i18n('routeCountOne') : i18n('routeCount', ['count' => count($routes)]);
         $html = '<div class="result-head"><p class="eyebrow">' . i18n('kickerAip') . '</p>' . $pair
-            . '<div class="badges"><span class="badge">' . $count . '</span>' . $eobtBadge . '</div></div><div class="route-list">';
+            . '<div class="badges"><span class="badge">' . $count . '</span>' . $eobtBadge . $pointsBadge . '</div></div><div class="route-list">';
         foreach ($routes as $index => $route) {
+            $shown = shown_route($route, $points);
             $html .= '<article class="route-card"><div class="route-card-head"><span class="route-number">'
                 . i18n('routeNumber', ['n' => $index + 1]) . '</span><span class="card-actions">'
-                . (isset($route['geometry']) ? map_button($index) : '') . copy_button($route['route']) . simbrief_button($index) . '</span></div>'
-                . '<p class="route-string">' . e($route['route']) . '</p><dl class="route-meta">'
+                . (isset($route['geometry']) ? map_button($index) : '') . copy_button($shown) . simbrief_button($index) . '</span></div>'
+                . '<p class="route-string">' . e($shown) . '</p><dl class="route-meta">'
                 . time_meta($route['time_restriction'] ?? '')
                 . meta_item('altitude', $route['altitude'] ?? '')
                 . meta_item('aircraft', $route['aircraft'] ?? '')
@@ -131,7 +169,7 @@ function render_results(array $query, ?array $response, ?array $transfers = null
                 . ($transfers !== null ? route_transfer_block($dep, $arr, $route['route'], $transfers) : '')
                 . '</article>';
         }
-        return $html . '</div>' . $footer . $atisBlock . map_panel($routes);
+        return $html . '</div>' . $footer . $atisBlock . map_panel($routes, $points);
     }
 
     if ($source === 'generated' && isset($data['generated'])) {
@@ -144,13 +182,14 @@ function render_results(array $query, ?array $response, ?array $transfers = null
             $known = warning_key($warning);
             $warnings .= $known ? i18n($known[0], $known[1], 'li') : '<li>' . e($warning) . '</li>';
         }
+        $shown = shown_route($route, $points);
         $methodKey = ($route['method'] ?? '') === 'direct' ? 'methodDirect' : 'methodAirway';
         return '<div class="result-head"><p class="eyebrow">' . i18n('kickerGenerated') . '</p>' . $pair
-            . '<div class="badges">' . $eobtBadge . '</div></div>'
+            . '<div class="badges">' . $eobtBadge . $pointsBadge . '</div></div>'
             . '<article class="route-card route-card-generated"><div class="route-card-head"><span class="route-number">'
             . i18n('generatedLabel') . '</span><span class="card-actions">'
-            . (isset($route['geometry']) ? map_button(0) : '') . copy_button($route['route']) . simbrief_button(0) . '</span></div>'
-            . '<p class="route-string">' . e($route['route']) . '</p>'
+            . (isset($route['geometry']) ? map_button(0) : '') . copy_button($shown) . simbrief_button(0) . '</span></div>'
+            . '<p class="route-string">' . e($shown) . '</p>'
             . '<dl class="route-meta">'
             . '<div class="meta-item"><dt>' . i18n('distance') . '</dt><dd>' . e((string) round((float) ($route['distance_nm'] ?? 0))) . ' NM</dd></div>'
             . '<div class="meta-item"><dt>' . i18n('method') . '</dt><dd>' . i18n($methodKey) . '</dd></div>'
@@ -163,7 +202,7 @@ function render_results(array $query, ?array $response, ?array $transfers = null
             . ($warnings !== '' ? '<div class="route-notes"><h4>' . i18n('notes') . '</h4><ul>' . $warnings . '</ul></div>' : '')
             . ($transfers !== null ? route_transfer_block($dep, $arr, $route['route'], $transfers) : '')
             . i18n('generatedNote', [], 'p', ' class="route-scope"')
-            . '</article>' . $footer . $atisBlock . map_panel([$route]);
+            . '</article>' . $footer . $atisBlock . map_panel([$route], $points);
     }
 
     if ($source === 'aip_time_mismatch') {

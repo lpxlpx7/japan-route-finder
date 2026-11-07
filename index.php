@@ -10,6 +10,7 @@ $query = [
     'eobt' => trim((string) ($_GET['eobt'] ?? '')),
     'transfer' => ($_GET['transfer'] ?? '') === '1',
     'atis' => ($_GET['atis'] ?? '') === '1',
+    'points' => ($_GET['points'] ?? '') === '1',
 ];
 $searched = isset($_GET['dep']) || isset($_GET['arr']);
 
@@ -95,6 +96,7 @@ page_start('routes', 'Published AIP routes between Japanese airports, with a gen
         <div class="form-options">
           <?= switch_control('transfer', 'transferToggle', $query['transfer']) ?>
           <?= switch_control('atis', 'atisToggle', $query['atis']) ?>
+          <?= switch_control('points', 'pointsToggle', $query['points']) ?>
           <p class="field-hint" data-i18n="optionsHint"><?= e(t('optionsHint')) ?></p>
         </div>
         <div class="form-row">
@@ -133,4 +135,20 @@ page_start('routes', 'Published AIP routes between Japanese airports, with a gen
       </div>
     </section>
   </main>
+
+  <dialog class="confirm-dialog" id="points-warning" aria-labelledby="points-warning-title">
+    <form method="dialog">
+      <h2 id="points-warning-title" data-i18n="pointsWarningTitle"><?= e(t('pointsWarningTitle')) ?></h2>
+      <p data-i18n="pointsWarningText"><?= e(t('pointsWarningText')) ?></p>
+      <ul>
+        <li data-i18n="pointsWarningNavdata"><?= e(t('pointsWarningNavdata')) ?></li>
+        <li data-i18n="pointsWarningFiling"><?= e(t('pointsWarningFiling')) ?></li>
+        <li data-i18n="pointsWarningSim"><?= e(t('pointsWarningSim')) ?></li>
+      </ul>
+      <div class="confirm-actions">
+        <button class="button button-secondary" type="submit" value="cancel" data-i18n="pointsWarningCancel"><?= e(t('pointsWarningCancel')) ?></button>
+        <button class="button button-primary" type="submit" value="confirm" data-i18n="pointsWarningConfirm"><?= e(t('pointsWarningConfirm')) ?></button>
+      </div>
+    </form>
+  </dialog>
 <?php page_end();

@@ -5,7 +5,7 @@ const results = document.querySelector("#results");
 const formError = form.querySelector(".form-error");
 const submitButton = form.querySelector('button[type="submit"]');
 
-const fields = { dep: form.elements.dep, arr: form.elements.arr, eobt: form.elements.eobt, transfer: form.elements.transfer, atis: form.elements.atis };
+const fields = { dep: form.elements.dep, arr: form.elements.arr, eobt: form.elements.eobt, transfer: form.elements.transfer, atis: form.elements.atis, points: form.elements.points };
 const cleanIcao = (value) => value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4);
 
 const showError = (key) => {
@@ -37,6 +37,7 @@ const search = async ({ push = true } = {}) => {
   if (fields.eobt.value) params.set("eobt", fields.eobt.value);
   if (fields.transfer.checked) params.set("transfer", "1");
   if (fields.atis.checked) params.set("atis", "1");
+  if (fields.points.checked) params.set("points", "1");
   pending?.abort();
   pending = new AbortController();
   setBusy(true);
@@ -87,6 +88,20 @@ results.addEventListener("click", async (event) => {
     label.textContent = t(label.dataset.i18n);
   }
 });
+// "All waypoints" only turns on after the warning is accepted. Turning it off needs no warning.
+const pointsWarning = document.querySelector("#points-warning");
+fields.points.addEventListener("change", () => {
+  if (!fields.points.checked || !pointsWarning?.showModal) return;
+  fields.points.checked = false;
+  pointsWarning.returnValue = "";
+  pointsWarning.showModal();
+});
+pointsWarning?.addEventListener("close", () => {
+  if (pointsWarning.returnValue !== "confirm") return;
+  fields.points.checked = true;
+  if (!results.hidden) search();
+});
+
 [fields.dep, fields.arr].forEach((input) => input.addEventListener("input", () => {
   input.value = cleanIcao(input.value);
   showError("");
@@ -111,6 +126,7 @@ window.addEventListener("popstate", () => {
   fields.eobt.value = params.get("eobt") || "";
   fields.transfer.checked = params.get("transfer") === "1";
   fields.atis.checked = params.get("atis") === "1";
+  fields.points.checked = params.get("points") === "1";
   if (fields.dep.value && fields.arr.value) search({ push: false });
   else results.hidden = true;
 });
