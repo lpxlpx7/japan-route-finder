@@ -1,18 +1,18 @@
 # Japan Route Finder
 
-Look up IFR routes between airports in Japan. If the AIP publishes a route for the pair, the site shows it. If it doesn't, it shows a reference route generated from NavData.
+A web page for finding IFR routes between Japanese airports. It shows the AIP route when one exists and a NavData-generated reference route when none does.
 
-The routes come from [Jurina API](https://api.jurina.org) (`/v1/japan-route/route`). The PHP page calls the API from the server, so the API key never reaches the browser.
+The routes come from [Jurina API](https://api.jurina.org) (`/v1/japan-route/route`). PHP calls the API from the server, so the key stays out of the browser.
 
-Turn on "Transfer altitudes" to also get the ATC handoff points and altitudes (`/v1/japan-route/transfer`) for each route's first and last fix. `transfer.php` looks them up on their own: enter an airport, pick arrival or departure, and choose a fix from the list, or leave it on "All fixes".
+The "Transfer altitudes" switch adds ATC handoff points and altitudes (`/v1/japan-route/transfer`) for each route's first and last fix. `transfer.php` looks them up separately: enter an airport, pick arrival or departure, then choose a fix or leave it on "All fixes".
 
-Turn on "ATIS" to also see the current ATIS for both airports. `atis.php` shows one airport's ATIS and its recent changes (`/v1/atis/`): type a code or name, or open the list, then search. Where an airport's own site has an icon (`assets/airports`, sources in `SOURCES.md` there), it replaces the ATIS letter on the card.
+The "ATIS" switch adds the current ATIS for both airports. `atis.php` shows one airport's ATIS and recent changes (`/v1/atis/`); search by code or name, or open the list. If the airport's own site has an icon (`assets/airports`, sources in `SOURCES.md`), it replaces the ATIS letter on the card.
 
 Turn on "All waypoints" to write each route as every point along it, without airway names (`KAIHO Y56 SPENS` → `KAIHO … SPENS` with each fix in between). The points come from the route's map geometry, with the airports and SID/STAR connections left out. A warning has to be accepted before the switch turns on. The copy button and the map copy that list. "Add to SimBrief" still sends the route with its airways.
 
 "Add to SimBrief" on each route card opens SimBrief's dispatch page (`dispatch.simbrief.com/options/custom`) prefilled with both airports, that route (arrival transfer points marked with their altitude, like `SPENS/A130` or `RURIK/F180`; departure ones are left out) and the runways read from the current ATIS (`origrwy`, `destrwy`), whatever the switches are set to. `index.php?simbrief=N` builds the link for card N, counting from 0 (`src/simbrief.php`).
 
-Below the results there's a map of the route. Scroll over it to zoom. The page draws it with Leaflet from the `geometry` coordinates in the API response. The API's own signed `map_url` and `map.png` aren't used, so the browser never sees the API's address, a signed link or the key.
+Results include a map you can zoom by scrolling. Leaflet draws it from the `geometry` coordinates in the API response. The API's signed `map_url` and `map.png` are skipped, so the browser never sees the API's address, a signed link or the key.
 
 ## Requirements
 
@@ -76,11 +76,11 @@ fonts/               SF Pro (en/pro) and GenShin Gothic (jp), as on jurina.org
 assets/              CSS and icons
 ```
 
-The look follows [jurina.org](https://www.jurina.org/): same colors, fonts, light/dark theme and EN/日本語 switch.
+The styling matches [jurina.org](https://www.jurina.org/): colors, fonts, light/dark theme and EN/日本語 switch.
 
 ## Attribution
 
-The route search started in Kevin's [Japan Flight Dispatcher](https://github.com/kevin-git-2026/japan-flight-dispatcher). Thanks to Kevin for the original app. The upstream project doesn't declare a license, so no rights to its code are granted here.
+The route search started in Kevin's [Japan Flight Dispatcher](https://github.com/kevin-git-2026/japan-flight-dispatcher). The upstream project doesn't declare a license, so no rights to its code are granted here.
 
 Published routes come from [jp-routes](https://jp-routes.vercel.app/). Generated routes use X-Plane NavData from Navigraph and are only for flight simulation.
 
